@@ -6,23 +6,23 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
   id                String  @id @default(cuid())
   userId            String
-  type              String
-  provider          String
+  type             String
+  provider         String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+  refresh_token    String? @db.Text
+  access_token     String? @db.Text
+  expires_at       Int?
+  token_type       String?
+  scope            String?
+  id_token         String? @db.Text
+  session_state    String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -37,6 +37,24 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  telefono      String?
+  ubicacion     String?
+  bio           String?   @db.Text
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  adisos        Adiso[]
+  favoritos     Favorito[]
+}
+
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -45,164 +63,47 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Perfil extendido
-  bio           String?
-  telefono      String?
-  ubicacion     String?
-  isPremium     Boolean   @default(false)
-  premiumUntil  DateTime?
-  
-  // Relaciones
-  accounts      Account[]
-  sessions      Session[]
-  anuncios      Anuncio[]
-  favoritos     Favorito[]
-  reviews       Review[]    @relation("UserReviews")
-  reviewsRecibidas Review[] @relation("ReceivedReviews")
-  mensajes      Mensaje[]   @relation("UserMensajes")
-  mensajesRecibidos Mensaje[] @relation("ReceivedMensajes")
-  notificaciones Notificacion[]
-}
-
-model Anuncio {
-  id          String   @id @default(cuid())
-  titulo      String
-  descripcion String
-  precio      Float
-  estado      Estado   @default(ACTIVO)
-  isPremium   Boolean  @default(false)
-  vistas      Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Campos extendidos
-  categoria   Categoria @relation(fields: [categoriaId], references: [id])
-  categoriaId String
-  ubicacion   String
-  condicion   Condicion @default(NUEVO)
-  envio       Boolean   @default(false)
-  precioNegociable Boolean @default(false)
-  destacadoHasta DateTime?
-  
-  // Media - Para SQLite almacenaremos las imágenes como JSON string
-  imagenes    String   // JSON string de URLs
-  video       String?
-
-  // Relaciones
-  usuario     User      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId   String
-  favoritos   Favorito[]
-  reviews     Review[]
-  mensajes    Mensaje[]
-  etiquetas   EtiquetasEnAnuncios[]
+model Adiso {
+  id              String    @id @default(cuid())
+  titulo          String
+  descripcion     String    @db.Text
+  precio          Float
+  imagenes        String[]
+  ubicacion       String
+  condicion       String
+  envio           Boolean   @default(false)
+  precioNegociable Boolean  @default(false)
+  estado          Estado    @default(ACTIVO)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoriaId     String
+  categoria       Categoria @relation(fields: [categoriaId], references: [id])
+  favoritos       Favorito[]
 }
 
 model Categoria {
-  id          String    @id @default(cuid())
-  nombre      String    @unique
-  descripcion String?
-  icono       String?
-  slug        String    @unique
-  orden       Int       @default(0)
-  parentId    String?
-  
-  // Relaciones
-  parent      Categoria?  @relation("SubCategorias", fields: [parentId], references: [id])
-  subCategorias Categoria[] @relation("SubCategorias")
-  anuncios    Anuncio[]
+  id      String   @id @default(cuid())
+  nombre  String   @unique
+  slug    String   @unique
+  adisos  Adiso[]
 }
 
 model Favorito {
   id        String   @id @default(cuid())
+  userId    String
+  adisoId   String
   createdAt DateTime @default(now())
-  
-  usuario   User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId String
-  anuncio   Anuncio  @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
-  anuncioId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adiso     Adiso    @relation(fields: [adisoId], references: [id], onDelete: Cascade)
 
-  @@unique([usuarioId, anuncioId])
-}
-
-model Review {
-  id        String   @id @default(cuid())
-  rating    Int
-  comentario String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relaciones
-  anuncio   Anuncio  @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
-  anuncioId String
-  autor     User     @relation("UserReviews", fields: [autorId], references: [id], onDelete: Cascade)
-  autorId   String
-  receptor  User     @relation("ReceivedReviews", fields: [receptorId], references: [id], onDelete: Cascade)
-  receptorId String
-}
-
-model Mensaje {
-  id        String   @id @default(cuid())
-  contenido String
-  leido     Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relaciones
-  anuncio   Anuncio  @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
-  anuncioId String
-  emisor    User     @relation("UserMensajes", fields: [emisorId], references: [id], onDelete: Cascade)
-  emisorId  String
-  receptor  User     @relation("ReceivedMensajes", fields: [receptorId], references: [id], onDelete: Cascade)
-  receptorId String
-}
-
-model Notificacion {
-  id        String   @id @default(cuid())
-  tipo      TipoNotificacion
-  titulo    String
-  mensaje   String
-  leida     Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  // Relaciones
-  usuario   User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId String
-}
-
-model Etiqueta {
-  id          String   @id @default(cuid())
-  nombre      String   @unique
-  slug        String   @unique
-  createdAt   DateTime @default(now())
-  
-  // Relaciones
-  anuncios    EtiquetasEnAnuncios[]
-}
-
-model EtiquetasEnAnuncios {
-  etiqueta   Etiqueta @relation(fields: [etiquetaId], references: [id])
-  etiquetaId String
-  anuncio    Anuncio  @relation(fields: [anuncioId], references: [id])
-  anuncioId  String
-
-  @@id([etiquetaId, anuncioId])
+  @@unique([userId, adisoId])
 }
 
 enum Role {
   USER
   ADMIN
-  MODERATOR
 }
 
 enum Estado {
@@ -210,20 +111,4 @@ enum Estado {
   PAUSADO
   VENDIDO
   ELIMINADO
-}
-
-enum Condicion {
-  NUEVO
-  COMO_NUEVO
-  BUEN_ESTADO
-  USADO
-  PARA_PIEZAS
-}
-
-enum TipoNotificacion {
-  MENSAJE
-  OFERTA
-  SISTEMA
-  REVIEW
-  VENTA
 }
