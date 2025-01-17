@@ -6,6 +6,7 @@ import "@/styles/globals.css"
 import { cn } from "@/lib/utils"
 import { MainLayout } from "@/components/layout/main-layout"
 import { Toaster } from "@/components/ui/toaster"
+import { AuthProvider } from "@/providers/auth-provider"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -41,11 +42,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.variable
         )}
       >
-        <MainLayout>
-          {children}
-          <Toaster />
-        </MainLayout>
-        <Analytics />
+        <AuthProvider>
+          <MainLayout>
+            {children}
+            <Toaster />
+          </MainLayout>
+          <Analytics />
+        </AuthProvider>
       </body>
     </html>
   )
