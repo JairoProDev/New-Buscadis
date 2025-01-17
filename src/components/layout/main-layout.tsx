@@ -1,11 +1,15 @@
 import * as React from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
+import { signOut } from "next-auth/react"
 
 import { cn } from "@/lib/utils"
+import { routes } from "@/lib/routes"
 import { PremiumNav } from "@/components/ui/premium-nav"
 import { PremiumSearch } from "@/components/ui/premium-search"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/hooks/use-auth"
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -13,19 +17,19 @@ interface MainLayoutProps {
 
 const navigationItems = [
   {
-    href: "/",
+    href: routes.home,
     label: "Inicio",
   },
   {
-    href: "/anuncios",
+    href: routes.anuncios.index,
     label: "Anuncios",
   },
   {
-    href: "/categorias",
+    href: routes.categorias,
     label: "Categorías",
   },
   {
-    href: "/premium",
+    href: routes.premium,
     label: "Premium",
   },
 ]
@@ -33,6 +37,7 @@ const navigationItems = [
 export function MainLayout({ children }: MainLayoutProps) {
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+  const { user, isAuthenticated, isLoading } = useAuth()
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -54,13 +59,15 @@ export function MainLayout({ children }: MainLayoutProps) {
       >
         <div className="container flex h-16 items-center justify-between">
           {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-xl font-bold"
-          >
-            BuscaDis
-          </motion.div>
+          <Link href={routes.home}>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xl font-bold"
+            >
+              BuscaDis
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-4">
@@ -79,13 +86,38 @@ export function MainLayout({ children }: MainLayoutProps) {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              Publicar Anuncio
-            </Button>
-            <Avatar>
-              <AvatarImage src="" alt="@usuario" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+            {isAuthenticated ? (
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={routes.anuncios.nuevo}>Publicar Anuncio</Link>
+                </Button>
+                <div className="relative">
+                  <Avatar>
+                    <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
+                    <AvatarFallback>
+                      {user?.name?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => signOut()}
+                    className="absolute right-0 top-full mt-2 whitespace-nowrap"
+                  >
+                    Cerrar sesión
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href={routes.auth.login}>Iniciar sesión</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href={routes.auth.register}>Crear cuenta</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -133,6 +165,25 @@ export function MainLayout({ children }: MainLayoutProps) {
                 direction="vertical"
                 className="flex flex-col space-y-2"
               />
+              {isAuthenticated ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  className="w-full"
+                >
+                  Cerrar sesión
+                </Button>
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={routes.auth.login}>Iniciar sesión</Link>
+                  </Button>
+                  <Button size="sm" asChild>
+                    <Link href={routes.auth.register}>Crear cuenta</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -162,25 +213,63 @@ export function MainLayout({ children }: MainLayoutProps) {
             <div>
               <h4 className="font-medium">Enlaces</h4>
               <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                <li>Sobre nosotros</li>
-                <li>Blog</li>
-                <li>Contacto</li>
+                <li>
+                  <Link href={routes.info.sobreNosotros}>Sobre nosotros</Link>
+                </li>
+                <li>
+                  <Link href={routes.info.blog}>Blog</Link>
+                </li>
+                <li>
+                  <Link href={routes.info.contacto}>Contacto</Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-medium">Legal</h4>
               <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                <li>Términos y condiciones</li>
-                <li>Política de privacidad</li>
-                <li>Cookies</li>
+                <li>
+                  <Link href={routes.legal.terminos}>Términos y condiciones</Link>
+                </li>
+                <li>
+                  <Link href={routes.legal.privacidad}>
+                    Política de privacidad
+                  </Link>
+                </li>
+                <li>
+                  <Link href={routes.legal.cookies}>Cookies</Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-medium">Social</h4>
               <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
-                <li>Twitter</li>
-                <li>Instagram</li>
-                <li>Facebook</li>
+                <li>
+                  <a
+                    href={routes.social.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Twitter
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={routes.social.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Instagram
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={routes.social.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Facebook
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
