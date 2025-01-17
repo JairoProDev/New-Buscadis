@@ -41,23 +41,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  accounts      Account[]
-  sessions      Session[]
-  anuncios      Anuncio[]
-  favoritos     Favorito[]
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -67,43 +50,164 @@ model VerificationToken {
 }
 
 // Modelos de la aplicación
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Perfil extendido
+  bio           String?   @db.Text
+  telefono      String?
+  ubicacion     String?
+  isPremium     Boolean   @default(false)
+  premiumUntil  DateTime?
+  
+  // Relaciones
+  accounts      Account[]
+  sessions      Session[]
+  anuncios      Anuncio[]
+  favoritos     Favorito[]
+  reviews       Review[]    @relation("UserReviews")
+  reviewsRecibidas Review[] @relation("ReceivedReviews")
+  mensajes      Mensaje[]   @relation("UserMensajes")
+  mensajesRecibidos Mensaje[] @relation("ReceivedMensajes")
+  notificaciones Notificacion[]
+}
+
 model Anuncio {
   id          String   @id @default(cuid())
   titulo      String
   descripcion String   @db.Text
-  precio      Float?
-  categoria   String
-  ubicacion   String?
-  imagenes    String[]
+  precio      Float
   estado      Estado   @default(ACTIVO)
-  premium     Boolean  @default(false)
+  isPremium   Boolean  @default(false)
+  vistas      Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  favoritos   Favorito[]
+  // Campos extendidos
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId String
+  ubicacion   String
+  condicion   Condicion @default(NUEVO)
+  envio       Boolean   @default(false)
+  precioNegociable Boolean @default(false)
+  destacadoHasta DateTime?
+  
+  // Media
+  imagenes    String[]
+  video       String?
 
-  @@index([categoria])
-  @@index([estado])
-  @@index([premium])
+  // Relaciones
+  usuario     User      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   String
+  favoritos   Favorito[]
+  reviews     Review[]
+  mensajes    Mensaje[]
+  etiquetas   EtiquetasEnAnuncios[]
+}
+
+model Categoria {
+  id          String    @id @default(cuid())
+  nombre      String    @unique
+  descripcion String?   @db.Text
+  icono       String?
+  slug        String    @unique
+  orden       Int       @default(0)
+  parentId    String?
+  
+  // Relaciones
+  parent      Categoria?  @relation("SubCategorias", fields: [parentId], references: [id])
+  subCategorias Categoria[] @relation("SubCategorias")
+  anuncios    Anuncio[]
 }
 
 model Favorito {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   
-  userId    String
-  anuncioId String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usuario   User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String
   anuncio   Anuncio  @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+  anuncioId String
 
-  @@unique([userId, anuncioId])
+  @@unique([usuarioId, anuncioId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      @db.SmallInt
+  comentario String? @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  anuncio   Anuncio  @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+  anuncioId String
+  autor     User     @relation("UserReviews", fields: [autorId], references: [id], onDelete: Cascade)
+  autorId   String
+  receptor  User     @relation("ReceivedReviews", fields: [receptorId], references: [id], onDelete: Cascade)
+  receptorId String
+}
+
+model Mensaje {
+  id        String   @id @default(cuid())
+  contenido String   @db.Text
+  leido     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  anuncio   Anuncio  @relation(fields: [anuncioId], references: [id], onDelete: Cascade)
+  anuncioId String
+  emisor    User     @relation("UserMensajes", fields: [emisorId], references: [id], onDelete: Cascade)
+  emisorId  String
+  receptor  User     @relation("ReceivedMensajes", fields: [receptorId], references: [id], onDelete: Cascade)
+  receptorId String
+}
+
+model Notificacion {
+  id        String   @id @default(cuid())
+  tipo      TipoNotificacion
+  titulo    String
+  mensaje   String   @db.Text
+  leida     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relaciones
+  usuario   User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId String
+}
+
+model Etiqueta {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  
+  // Relaciones
+  anuncios    EtiquetasEnAnuncios[]
+}
+
+model EtiquetasEnAnuncios {
+  etiqueta   Etiqueta @relation(fields: [etiquetaId], references: [id])
+  etiquetaId String
+  anuncio    Anuncio  @relation(fields: [anuncioId], references: [id])
+  anuncioId  String
+
+  @@id([etiquetaId, anuncioId])
 }
 
 enum Role {
   USER
   ADMIN
+  MODERATOR
 }
 
 enum Estado {
@@ -111,4 +215,20 @@ enum Estado {
   PAUSADO
   VENDIDO
   ELIMINADO
+}
+
+enum Condicion {
+  NUEVO
+  COMO_NUEVO
+  BUEN_ESTADO
+  USADO
+  PARA_PIEZAS
+}
+
+enum TipoNotificacion {
+  MENSAJE
+  OFERTA
+  SISTEMA
+  REVIEW
+  VENTA
 }
