@@ -24,6 +24,25 @@ interface FilterGroup {
   }
 }
 
+interface FilterState {
+  categoria?: string
+  precioMin?: number
+  precioMax?: number
+  condicion?: string
+  ubicacion?: string
+  envio?: boolean
+  ordenar?: string
+}
+
+interface FilterChangeHandler {
+  (name: keyof FilterState, value: string | number | boolean | undefined): void
+}
+
+interface FilterProps {
+  onFilterChange: FilterChangeHandler
+  initialFilters?: FilterState
+}
+
 interface PremiumFiltersProps {
   groups: FilterGroup[]
   selectedFilters: Record<string, any>
@@ -49,6 +68,10 @@ export function PremiumFilters({
   }
 
   const hasActiveFilters = Object.keys(selectedFilters).length > 0
+
+  const handleFilterChange = (name: keyof FilterState, value: string | number | boolean | undefined) => {
+    onFilterChange(name, value)
+  }
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -113,33 +136,31 @@ export function PremiumFilters({
                           type="range"
                           min={group.range.min}
                           max={group.range.max}
-                          step={group.range.step}
-                          value={
-                            selectedFilters[group.id]?.[0] ?? group.range.min
-                          }
+                          value={selectedFilters[group.id]?.[0] ?? group.range.min}
+                          aria-label={`Precio mínimo para ${group.label}`}
+                          title={`Precio mínimo para ${group.label}`}
                           onChange={(e) =>
-                            onFilterChange(group.id, [
+                            handleFilterChange(group.id, [
                               parseFloat(e.target.value),
                               selectedFilters[group.id]?.[1] ?? group.range.max,
                             ])
                           }
-                          className="w-full"
+                          className="range-input"
                         />
                         <input
                           type="range"
                           min={group.range.min}
                           max={group.range.max}
-                          step={group.range.step}
-                          value={
-                            selectedFilters[group.id]?.[1] ?? group.range.max
-                          }
+                          value={selectedFilters[group.id]?.[1] ?? group.range.max}
+                          aria-label={`Precio máximo para ${group.label}`}
+                          title={`Precio máximo para ${group.label}`}
                           onChange={(e) =>
-                            onFilterChange(group.id, [
+                            handleFilterChange(group.id, [
                               selectedFilters[group.id]?.[0] ?? group.range.min,
                               parseFloat(e.target.value),
                             ])
                           }
-                          className="w-full"
+                          className="range-input"
                         />
                       </div>
                     ) : group.type === "single" ? (
@@ -154,7 +175,7 @@ export function PremiumFilters({
                               name={group.id}
                               checked={selectedFilters[group.id] === option.value}
                               onChange={() =>
-                                onFilterChange(group.id, option.value)
+                                handleFilterChange(group.id, option.value)
                               }
                               className="peer h-4 w-4 rounded-full border-primary text-primary focus:ring-primary"
                             />
@@ -184,7 +205,7 @@ export function PremiumFilters({
                                   : currentValues.filter(
                                       (v: any) => v !== option.value
                                     )
-                                onFilterChange(
+                                handleFilterChange(
                                   group.id,
                                   newValues.length ? newValues : undefined
                                 )
@@ -247,7 +268,7 @@ export function PremiumFilters({
                 <span className="font-medium">{group.label}:</span>
                 <span>{renderValue()}</span>
                 <button
-                  onClick={() => onFilterChange(groupId, undefined)}
+                  onClick={() => handleFilterChange(groupId, undefined)}
                   className="ml-1 rounded-full p-1 hover:bg-primary/20"
                   aria-label={`Eliminar filtro ${group.label}`}
                 >

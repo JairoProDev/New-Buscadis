@@ -1,20 +1,11 @@
-import * as React from "react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { Search, Loader2, X } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useDebounce } from "use-debounce"
-
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "cmdk"
+import { cn } from "@/lib/utils"
+import { PremiumBadge } from "@/components/ui/premium-badge"
 import { PremiumImage } from "@/components/ui/premium-image"
 
 interface SearchResult {

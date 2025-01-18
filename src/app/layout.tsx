@@ -1,3 +1,4 @@
+import React from "react"
 import { Inter as FontSans } from "next/font/google"
 import { GeistSans } from "geist/font/sans"
 import { Analytics } from "@vercel/analytics/react"
@@ -23,8 +24,16 @@ export const metadata = {
     "compra",
     "venta",
     "servicios",
+    "productos",
     "accesible",
-    "discapacidad",
+    "empleos",
+    "trabajos",
+    "inmuebles",
+    "alquiler",
+    "buscadis",
+    "buscadis.com",
+    "vehiculos",
+
   ],
 }
 
@@ -34,7 +43,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning className={GeistSans.className}>
       <head />
       <body
         className={cn(

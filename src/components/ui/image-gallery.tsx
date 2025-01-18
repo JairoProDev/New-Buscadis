@@ -32,14 +32,16 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") showPrevious()
-      if (e.key === "ArrowRight") showNext()
-      if (e.key === "Escape") setIsFullscreen(false)
+      if (e.key === "ArrowLeft") {
+        showPrevious()
+      } else if (e.key === "ArrowRight") {
+        showNext()
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
+  }, [showPrevious, showNext])
 
   return (
     <>

@@ -1,64 +1,26 @@
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
-import { withAuth } from "next-auth/middleware"
-import { routes } from "@/lib/routes"
 
-export default withAuth(
-  async function middleware(req) {
-    const token = await getToken({ req })
-    const isAuth = !!token
-    const isAuthPage =
-      req.nextUrl.pathname.startsWith("/auth/login") ||
-      req.nextUrl.pathname.startsWith("/auth/register")
-    const isApiAuthRoute = req.nextUrl.pathname.startsWith("/api/auth")
-    const isPublicRoute = 
-      req.nextUrl.pathname === "/" ||
-      req.nextUrl.pathname.startsWith("/anuncios") ||
-      req.nextUrl.pathname.startsWith("/categorias") ||
-      req.nextUrl.pathname.startsWith("/blog") ||
-      req.nextUrl.pathname.startsWith("/sobre-nosotros") ||
-      req.nextUrl.pathname.startsWith("/contacto")
+export async function middleware(request: NextRequest) {
+  const session = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  })
 
-    // Permitir rutas públicas y API de autenticación
-    if (isPublicRoute || isApiAuthRoute) {
-      return NextResponse.next()
-    }
-
-    // Redirigir usuarios autenticados fuera de páginas de auth
-    if (isAuth && isAuthPage) {
-      return NextResponse.redirect(new URL(routes.home, req.url))
-    }
-
-    // Redirigir usuarios no autenticados a login
-    if (!isAuth && !isAuthPage) {
-      let callbackUrl = req.nextUrl.pathname
-      if (req.nextUrl.search) {
-        callbackUrl += req.nextUrl.search
-      }
-
-      const encodedCallbackUrl = encodeURIComponent(callbackUrl)
-      return NextResponse.redirect(
-        new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, req.url)
-      )
-    }
-
-    return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => true, // La autorización se maneja en el middleware
-    },
+  // Rutas protegidas que requieren autenticación
+  if (request.nextUrl.pathname.startsWith("/perfil") && !session) {
+    return NextResponse.redirect(new URL("/auth/login", request.url))
   }
-)
 
-// Configurar las rutas que requieren el middleware
+  // Rutas de autenticación que redirigen si ya está autenticado
+  if (request.nextUrl.pathname.startsWith("/auth/") && session) {
+    return NextResponse.redirect(new URL("/", request.url))
+  }
+
+  return NextResponse.next()
+}
+
 export const config = {
-  matcher: [
-    "/perfil/:path*",
-    "/anuncios/nuevo",
-    "/anuncios/:path*/editar",
-    "/mensajes/:path*",
-    "/favoritos/:path*",
-    "/auth/:path*",
-  ],
+  matcher: ["/perfil/:path*", "/auth/:path*"],
 } 
