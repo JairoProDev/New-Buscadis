@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -30,7 +32,7 @@ export function SearchResults({
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["anuncios", searchParams],
+    queryKey: ["adisos", searchParams],
     queryFn: async ({ pageParam = 1 }) => {
       const params = new URLSearchParams({
         ...searchParams,
@@ -38,7 +40,7 @@ export function SearchResults({
       } as Record<string, string>)
 
       const res = await fetch(`/api/search?${params.toString()}`)
-      if (!res.ok) throw new Error("Error al cargar los anuncios")
+      if (!res.ok) throw new Error("Error al cargar los adisos")
       return res.json()
     },
     getNextPageParam: (lastPage) =>
@@ -52,44 +54,44 @@ export function SearchResults({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
-  const anuncios = data?.pages.flatMap((page) => page.anuncios) ?? []
+  const adisos = data?.pages.flatMap((page) => page.adisos) ?? []
 
   if (error) {
     return (
       <div className="flex items-center justify-center py-12 text-muted-foreground">
-        Error al cargar los anuncios. Por favor, intenta de nuevo.
+        Error al cargar los adisos. Por favor, intenta de nuevo.
       </div>
     )
   }
 
-  if (anuncios.length === 0 && !isFetching) {
+  if (adisos.length === 0 && !isFetching) {
     return (
       <div className="flex items-center justify-center py-12 text-muted-foreground">
-        No se encontraron anuncios que coincidan con tu búsqueda.
+        No se encontraron adisos que coincidan con tu búsqueda.
       </div>
     )
   }
 
   return (
     <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)} {...props}>
-      {anuncios.map((anuncio, index) => (
+      {adisos.map((adiso, index) => (
         <motion.div
-          key={anuncio.id}
+          key={adiso.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
         >
-          <Link href={`/anuncios/${anuncio.id}`}>
+          <Link href={`/adisos/${adiso.id}`}>
             <PremiumCard className="h-full transition-all hover:scale-[1.02]">
               <PremiumCard.Header>
                 <div className="relative aspect-square w-full overflow-hidden rounded-t-xl">
                   <PremiumImage
-                    src={JSON.parse(anuncio.imagenes)[0] || "/placeholder.png"}
-                    alt={anuncio.titulo}
+                    src={JSON.parse(adiso.imagenes)[0] || "/placeholder.png"}
+                    alt={adiso.titulo}
                     fill
                     className="object-cover"
                   />
-                  {anuncio.isPremium && (
+                  {adiso.isPremium && (
                     <Badge
                       variant="premium"
                       className="absolute left-2 top-2"
@@ -100,12 +102,12 @@ export function SearchResults({
                 </div>
               </PremiumCard.Header>
               <PremiumCard.Content>
-                <PremiumCard.Title>{anuncio.titulo}</PremiumCard.Title>
+                <PremiumCard.Title>{adiso.titulo}</PremiumCard.Title>
                 <PremiumCard.Description>
-                  {anuncio.descripcion}
+                  {adiso.descripcion}
                 </PremiumCard.Description>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className="text-lg font-bold">€{anuncio.precio}</span>
+                  <span className="text-lg font-bold">€{adiso.precio}</span>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Button
                       variant="ghost"
@@ -115,7 +117,7 @@ export function SearchResults({
                     >
                       <Heart className="h-4 w-4" />
                       <span className="ml-1 text-xs">
-                        {anuncio._count.favoritos}
+                        {adiso._count.favoritos}
                       </span>
                     </Button>
                     <Button
@@ -126,7 +128,7 @@ export function SearchResults({
                     >
                       <MessageCircle className="h-4 w-4" />
                       <span className="ml-1 text-xs">
-                        {anuncio._count.mensajes}
+                        {adiso._count.mensajes}
                       </span>
                     </Button>
                     <Button
@@ -137,7 +139,7 @@ export function SearchResults({
                     >
                       <Star className="h-4 w-4" />
                       <span className="ml-1 text-xs">
-                        {anuncio._count.reviews}
+                        {adiso._count.reviews}
                       </span>
                     </Button>
                   </div>
@@ -146,16 +148,16 @@ export function SearchResults({
               <PremiumCard.Footer>
                 <div className="flex items-center gap-2">
                   <PremiumImage
-                    src={anuncio.usuario.image || "/placeholder-user.png"}
-                    alt={anuncio.usuario.name || ""}
+                    src={adiso.usuario.image || "/placeholder-user.png"}
+                    alt={adiso.usuario.name || ""}
                     width={24}
                     height={24}
                     className="rounded-full"
                   />
                   <span className="text-sm text-muted-foreground">
-                    {anuncio.usuario.name}
+                    {adiso.usuario.name}
                   </span>
-                  {anuncio.usuario.isPremium && (
+                  {adiso.usuario.isPremium && (
                     <Badge variant="premium" className="h-4 px-1 text-[10px]">
                       PRO
                     </Badge>

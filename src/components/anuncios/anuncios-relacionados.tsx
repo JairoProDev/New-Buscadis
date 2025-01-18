@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -10,16 +12,16 @@ import { PremiumImage } from "@/components/ui/premium-image"
 import { Badge } from "@/components/ui/badge"
 import { db } from "@/lib/db"
 
-interface AnunciosRelacionadosProps {
+interface AdisosRelacionadosProps {
   categoriaId: string
-  anuncioId: string
+  adisoId: string
 }
 
-async function getAnunciosRelacionados(categoriaId: string, anuncioId: string) {
-  const anuncios = await db.anuncio.findMany({
+async function getAdisosRelacionados(categoriaId: string, adisoId: string) {
+  const adisos = await db.adiso.findMany({
     where: {
       categoriaId,
-      id: { not: anuncioId },
+      id: { not: adisoId },
       estado: "ACTIVO",
     },
     include: {
@@ -36,22 +38,22 @@ async function getAnunciosRelacionados(categoriaId: string, anuncioId: string) {
     },
   })
 
-  return anuncios
+  return adisos
 }
 
-export async function AnunciosRelacionados({
+export async function AdisosRelacionados({
   categoriaId,
-  anuncioId,
-}: AnunciosRelacionadosProps) {
-  const anuncios = await getAnunciosRelacionados(categoriaId, anuncioId)
+  adisoId,
+}: AdisosRelacionadosProps) {
+  const adisos = await getAdisosRelacionados(categoriaId, adisoId)
 
-  if (anuncios.length === 0) return null
+  if (adisos.length === 0) return null
 
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight">
-          Anuncios relacionados
+          Adisos relacionados
         </h2>
         <div className="flex items-center gap-2">
           <Button
@@ -74,19 +76,19 @@ export async function AnunciosRelacionados({
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {anuncios.map((anuncio, index) => (
+        {adisos.map((adiso, index) => (
           <motion.div
-            key={anuncio.id}
+            key={adiso.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Link href={`/anuncios/${anuncio.id}`}>
+            <Link href={`/adisos/${adiso.id}`}>
               <PremiumCard className="group h-full transition-all hover:shadow-lg">
                 <PremiumCard.Header>
                   <PremiumImage
-                    src={JSON.parse(anuncio.imagenes)[0]}
-                    alt={anuncio.titulo}
+                    src={JSON.parse(adiso.imagenes)[0]}
+                    alt={adiso.titulo}
                     width={400}
                     height={300}
                     className="aspect-[4/3] rounded-t-xl object-cover"
@@ -94,14 +96,14 @@ export async function AnunciosRelacionados({
                 </PremiumCard.Header>
                 <PremiumCard.Content>
                   <PremiumCard.Title className="line-clamp-2">
-                    {anuncio.titulo}
+                    {adiso.titulo}
                   </PremiumCard.Title>
                   <PremiumCard.Description>
                     <div className="mt-2 flex items-center justify-between">
                       <span className="text-lg font-bold text-primary">
-                        {formatPrice(anuncio.precio)}
+                        {formatPrice(adiso.precio)}
                       </span>
-                      {anuncio.precioNegociable && (
+                      {adiso.precioNegociable && (
                         <Badge variant="secondary">Negociable</Badge>
                       )}
                     </div>
@@ -111,14 +113,14 @@ export async function AnunciosRelacionados({
                   <div className="flex items-center gap-2">
                     <div className="relative h-6 w-6 overflow-hidden rounded-full">
                       <PremiumImage
-                        src={anuncio.user.image || "/placeholder.png"}
-                        alt={anuncio.user.name || "Avatar"}
+                        src={adiso.user.image || "/placeholder.png"}
+                        alt={adiso.user.name || "Avatar"}
                         fill
                         className="object-cover"
                       />
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      {anuncio.user.name}
+                      {adiso.user.name}
                     </span>
                   </div>
                 </PremiumCard.Footer>

@@ -10,8 +10,8 @@ import { PremiumImage } from "@/components/ui/premium-image"
 import { routes } from "@/config/routes"
 
 export const metadata: Metadata = {
-  title: "BuscaDis - Anuncios clasificados accesibles para todos",
-  description: "Encuentra lo que buscas o publica tus anuncios de forma fácil y accesible.",
+  title: "BuscaDis - Adisos clasificados accesibles para todos",
+  description: "Encuentra lo que buscas o publica tus adisos de forma fácil y accesible.",
 }
 
 export default async function HomePage() {
@@ -24,23 +24,11 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
       take: 6,
       include: {
-        usuario: {
-          select: {
-            name: true,
-            image: true,
-            isPremium: true,
-          },
-        },
-        categoria: {
-          select: {
-            nombre: true,
-            slug: true,
-          },
-        },
+        usuario: true,
+        categoria: true,
         _count: {
           select: {
             favoritos: true,
-            reviews: true,
           },
         },
       },
@@ -60,15 +48,15 @@ export default async function HomePage() {
             </span>
           </h1>
           <p className="max-w-[750px] text-lg text-muted-foreground sm:text-xl">
-            BuscaDis es la plataforma de anuncios clasificados diseñada pensando en la
-            accesibilidad. Encuentra lo que buscas o publica tus anuncios de forma fácil.
+            BuscaDis es la plataforma de adisos clasificados diseñada pensando en la
+            accesibilidad. Encuentra lo que buscas o publica tus adisos de forma fácil.
           </p>
           <div className="flex gap-4">
             <Button size="lg" asChild>
-              <Link href={routes.adisos.new}>Publicar anuncio</Link>
+              <Link href={routes.adisos.new}>Publicar adiso</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href={routes.adisos.index}>Ver anuncios</Link>
+              <Link href={routes.adisos.index}>Ver adisos</Link>
             </Button>
           </div>
         </div>
@@ -104,48 +92,39 @@ export default async function HomePage() {
       {/* Featured Listings Section */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">Anuncios destacados</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Adisos destacados</h2>
           <Button variant="ghost" asChild>
             <Link href={routes.adisos.index}>Ver todos</Link>
           </Button>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {adisosDestacados.map((adiso) => (
-            <PremiumCard key={adiso.id}>
-              <Link href={routes.adisos.show(adiso.id)}>
-                <PremiumCard.Header>
-                  <div className="relative aspect-video overflow-hidden rounded-t-lg">
-                    <PremiumImage
-                      src={adiso.imagenes[0] || "/placeholder.png"}
-                      alt={adiso.titulo}
-                      fill
-                      className="object-cover"
-                    />
-                    {adiso.usuario.isPremium && (
-                      <div className="absolute left-2 top-2">
-                        <Button size="sm" variant="premium">
-                          PREMIUM
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </PremiumCard.Header>
-                <PremiumCard.Content>
-                  <PremiumCard.Title>{adiso.titulo}</PremiumCard.Title>
-                  <PremiumCard.Description>
+            <Link key={adiso.id} href={routes.adisos.show(adiso.id)}>
+              <PremiumCard>
+                <div className="relative aspect-video overflow-hidden rounded-t-lg">
+                  <PremiumImage
+                    src={adiso.imagenes[0] || "/placeholder.png"}
+                    alt={adiso.titulo}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="line-clamp-2 text-lg font-semibold">
+                    {adiso.titulo}
+                  </h3>
+                  <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
                     {adiso.descripcion}
-                  </PremiumCard.Description>
-                </PremiumCard.Content>
-                <PremiumCard.Footer>
-                  <div className="flex items-center justify-between">
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
                     <span className="font-medium">€{adiso.precio}</span>
                     <span className="text-sm text-muted-foreground">
                       {adiso.categoria.nombre}
                     </span>
                   </div>
-                </PremiumCard.Footer>
-              </Link>
-            </PremiumCard>
+                </div>
+              </PremiumCard>
+            </Link>
           ))}
         </div>
       </section>
@@ -156,10 +135,10 @@ export default async function HomePage() {
           ¿Tienes algo para vender?
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-          Publica tu anuncio gratis y llega a miles de compradores potenciales.
+          Publica tu adiso gratis y llega a miles de compradores potenciales.
         </p>
         <Button size="lg" className="mt-8" asChild>
-          <Link href={routes.adisos.new}>Publicar anuncio</Link>
+          <Link href={routes.adisos.new}>Publicar adiso</Link>
         </Button>
       </section>
     </div>

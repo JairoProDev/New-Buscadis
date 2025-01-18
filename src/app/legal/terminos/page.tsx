@@ -22,7 +22,7 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-xl font-semibold text-foreground">2. Descripción del servicio</h2>
           <p className="mt-2">
-            BuscaDis es una plataforma de anuncios clasificados diseñada con un enfoque en la accesibilidad.
+            BuscaDis es una plataforma de adisos clasificados diseñada con un enfoque en la accesibilidad.
             Facilitamos la conexión entre compradores y vendedores, pero no somos parte de las transacciones.
           </p>
         </section>
@@ -30,15 +30,15 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-xl font-semibold text-foreground">3. Registro y cuentas de usuario</h2>
           <p className="mt-2">
-            Para publicar anuncios, debe crear una cuenta. Usted es responsable de mantener la confidencialidad
+            Para publicar adisos, debe crear una cuenta. Usted es responsable de mantener la confidencialidad
             de su cuenta y contraseña, así como de restringir el acceso a su computadora.
           </p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-foreground">4. Publicación de anuncios</h2>
+          <h2 className="text-xl font-semibold text-foreground">4. Publicación de adisos</h2>
           <p className="mt-2">
-            Los usuarios son responsables del contenido que publican. Los anuncios deben ser precisos,
+            Los usuarios son responsables del contenido que publican. Los adisos deben ser precisos,
             legales y no violar derechos de terceros. Nos reservamos el derecho de eliminar contenido
             que incumpla nuestras políticas.
           </p>

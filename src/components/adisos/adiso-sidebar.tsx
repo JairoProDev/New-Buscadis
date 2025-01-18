@@ -12,13 +12,13 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { Anuncio as Adiso, User, Categoria } from "@prisma/client"
+import { Adiso as Adiso, User, Categoria } from "@prisma/client"
 import { useToast } from "@/components/ui/use-toast"
 
 interface AdisoSidebarProps {
   adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }
@@ -91,7 +91,7 @@ export function AdisoSidebar({ adiso, session }: AdisoSidebarProps) {
                 <div className="space-y-1">
                   <p className="font-medium leading-none">{adiso.user.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {adiso.user.anuncios.length} adisos
+                    {adiso.user.adisos.length} adisos
                   </p>
                 </div>
               </Link>
@@ -104,7 +104,7 @@ export function AdisoSidebar({ adiso, session }: AdisoSidebarProps) {
                 <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
                   <span className="text-sm">
-                    {adiso.user.anuncios.length} adisos publicados
+                    {adiso.user.adisos.length} adisos publicados
                   </span>
                 </div>
               </div>

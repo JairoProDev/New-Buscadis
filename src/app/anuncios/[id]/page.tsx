@@ -6,20 +6,20 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { formatPrice } from "@/lib/utils"
 import { ImageGallery } from "@/components/ui/image-gallery"
-import { AnuncioHeader } from "@/components/anuncios/anuncio-header"
-import { AnuncioContent } from "@/components/anuncios/anuncio-content"
-import { AnuncioSidebar } from "@/components/anuncios/anuncio-sidebar"
-import { AnuncioActions } from "@/components/anuncios/anuncio-actions"
-import { AnunciosRelacionados } from "@/components/anuncios/anuncios-relacionados"
+import { AdisoHeader } from "@/components/adisos/adiso-header"
+import { AdisoContent } from "@/components/adisos/adiso-content"
+import { AdisoSidebar } from "@/components/adisos/adiso-sidebar"
+import { AdisoActions } from "@/components/adisos/adiso-actions"
+import { AdisosRelacionados } from "@/components/adisos/adisos-relacionados"
 
-interface AnuncioPageProps {
+interface AdisoPageProps {
   params: {
     id: string
   }
 }
 
-async function getAnuncio(id: string) {
-  const anuncio = await db.anuncio.findUnique({
+async function getAdiso(id: string) {
+  const adiso = await db.adiso.findUnique({
     where: { id },
     include: {
       user: {
@@ -28,7 +28,7 @@ async function getAnuncio(id: string) {
           name: true,
           image: true,
           createdAt: true,
-          anuncios: {
+          adisos: {
             select: { id: true },
           },
         },
@@ -37,55 +37,55 @@ async function getAnuncio(id: string) {
     },
   })
 
-  if (!anuncio) {
+  if (!adiso) {
     return null
   }
 
-  return anuncio
+  return adiso
 }
 
 export async function generateMetadata({
   params,
-}: AnuncioPageProps): Promise<Metadata> {
-  const anuncio = await getAnuncio(params.id)
+}: AdisoPageProps): Promise<Metadata> {
+  const adiso = await getAdiso(params.id)
 
-  if (!anuncio) {
+  if (!adiso) {
     return {
-      title: "Anuncio no encontrado",
+      title: "Adiso no encontrado",
     }
   }
 
   return {
-    title: `${anuncio.titulo} - ${formatPrice(anuncio.precio)} - BuscaDis`,
-    description: anuncio.descripcion.slice(0, 160),
+    title: `${adiso.titulo} - ${formatPrice(adiso.precio)} - BuscaDis`,
+    description: adiso.descripcion.slice(0, 160),
     openGraph: {
-      title: anuncio.titulo,
-      description: anuncio.descripcion.slice(0, 160),
-      images: JSON.parse(anuncio.imagenes)[0],
+      title: adiso.titulo,
+      description: adiso.descripcion.slice(0, 160),
+      images: JSON.parse(adiso.imagenes)[0],
       type: "article",
-      authors: anuncio.user.name,
-      publishedTime: anuncio.createdAt.toISOString(),
-      modifiedTime: anuncio.updatedAt.toISOString(),
+      authors: adiso.user.name,
+      publishedTime: adiso.createdAt.toISOString(),
+      modifiedTime: adiso.updatedAt.toISOString(),
     },
     twitter: {
       card: "summary_large_image",
-      title: anuncio.titulo,
-      description: anuncio.descripcion.slice(0, 160),
-      images: JSON.parse(anuncio.imagenes)[0],
+      title: adiso.titulo,
+      description: adiso.descripcion.slice(0, 160),
+      images: JSON.parse(adiso.imagenes)[0],
     },
   }
 }
 
-export default async function AnuncioPage({ params }: AnuncioPageProps) {
+export default async function AdisoPage({ params }: AdisoPageProps) {
   const session = await getServerSession(authOptions)
-  const anuncio = await getAnuncio(params.id)
+  const adiso = await getAdiso(params.id)
 
-  if (!anuncio) {
+  if (!adiso) {
     notFound()
   }
 
-  const imagenes = JSON.parse(anuncio.imagenes)
-  const isOwner = session?.user?.id === anuncio.userId
+  const imagenes = JSON.parse(adiso.imagenes)
+  const isOwner = session?.user?.id === adiso.userId
 
   return (
     <div className="container relative mx-auto space-y-8 px-4 py-6 lg:space-y-12 lg:py-8">
@@ -100,33 +100,33 @@ export default async function AnuncioPage({ params }: AnuncioPageProps) {
             </li>
             <li>/</li>
             <li>
-              <a href={`/categorias/${anuncio.categoria.slug}`} className="hover:text-foreground">
-                {anuncio.categoria.nombre}
+              <a href={`/categorias/${adiso.categoria.slug}`} className="hover:text-foreground">
+                {adiso.categoria.nombre}
               </a>
             </li>
             <li>/</li>
-            <li className="truncate">{anuncio.titulo}</li>
+            <li className="truncate">{adiso.titulo}</li>
           </ol>
         </nav>
-        <AnuncioActions anuncio={anuncio} isOwner={isOwner} />
+        <AdisoActions adiso={adiso} isOwner={isOwner} />
       </div>
 
       {/* Contenido principal */}
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <ImageGallery images={imagenes} />
-          <AnuncioHeader anuncio={anuncio} />
-          <AnuncioContent anuncio={anuncio} />
+          <AdisoHeader adiso={adiso} />
+          <AdisoContent adiso={adiso} />
         </div>
         <div className="lg:col-span-1">
-          <AnuncioSidebar anuncio={anuncio} session={session} />
+          <AdisoSidebar adiso={adiso} session={session} />
         </div>
       </div>
 
-      {/* Anuncios relacionados */}
-      <AnunciosRelacionados
-        categoriaId={anuncio.categoriaId}
-        anuncioId={anuncio.id}
+      {/* Adisos relacionados */}
+      <AdisosRelacionados
+        categoriaId={adiso.categoriaId}
+        adisoId={adiso.id}
       />
     </div>
   )

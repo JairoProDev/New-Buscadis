@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { Search as SearchIcon, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"

@@ -9,11 +9,11 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export const metadata: Metadata = {
-  title: "Anuncios - BuscaDis",
-  description: "Encuentra lo que buscas entre miles de anuncios",
+  title: "Adisos - BuscaDis",
+  description: "Encuentra lo que buscas entre miles de adisos",
 }
 
-export default async function AnunciosPage({
+export default async function AdisosPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -32,9 +32,9 @@ export default async function AnunciosPage({
     <div className="flex min-h-[calc(100vh-4rem)] flex-col gap-8 pb-8 pt-6">
       <div className="flex flex-col gap-4">
         <div className="grid gap-1">
-          <h1 className="text-2xl font-bold tracking-tight">Anuncios</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Adisos</h1>
           <p className="text-muted-foreground">
-            Encuentra lo que buscas entre miles de anuncios
+            Encuentra lo que buscas entre miles de adisos
           </p>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">

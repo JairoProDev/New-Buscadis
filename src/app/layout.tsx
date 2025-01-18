@@ -15,11 +15,11 @@ const fontSans = FontSans({
 })
 
 export const metadata = {
-  title: "BuscaDis - Anuncios Clasificados",
+  title: "BuscaDis - Adisos Clasificados",
   description:
-    "La plataforma de anuncios clasificados más accesible. Encuentra lo que buscas o publica tu anuncio.",
+    "La plataforma de adisos clasificados más accesible. Encuentra lo que buscas o publica tu adiso.",
   keywords: [
-    "anuncios",
+    "adisos",
     "clasificados",
     "compra",
     "venta",

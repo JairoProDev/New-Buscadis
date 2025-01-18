@@ -1,10 +1,12 @@
-import { Anuncio as Adiso, User, Categoria } from "@prisma/client"
+"use client"
+
+import { Adiso as Adiso, User, Categoria } from "@prisma/client"
 import { motion } from "framer-motion"
 
 interface AdisoContentProps {
   adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }

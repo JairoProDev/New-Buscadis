@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import Link from "next/link"
 import { Session } from "next-auth"
@@ -12,20 +14,20 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { Anuncio, User, Categoria } from "@prisma/client"
+import { Adiso, User, Categoria } from "@prisma/client"
 import { useToast } from "@/components/ui/use-toast"
 
-interface AnuncioSidebarProps {
-  anuncio: Anuncio & {
+interface AdisoSidebarProps {
+  adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }
   session: Session | null
 }
 
-export function AnuncioSidebar({ anuncio, session }: AnuncioSidebarProps) {
+export function AdisoSidebar({ adiso, session }: AdisoSidebarProps) {
   const { toast } = useToast()
   const [isFavorite, setIsFavorite] = React.useState(false)
   const [showPhone, setShowPhone] = React.useState(false)
@@ -33,8 +35,8 @@ export function AnuncioSidebar({ anuncio, session }: AnuncioSidebarProps) {
   const handleShare = async () => {
     try {
       await navigator.share({
-        title: anuncio.titulo,
-        text: anuncio.descripcion.slice(0, 100) + "...",
+        title: adiso.titulo,
+        text: adiso.descripcion.slice(0, 100) + "...",
         url: window.location.href,
       })
     } catch {
@@ -61,8 +63,8 @@ export function AnuncioSidebar({ anuncio, session }: AnuncioSidebarProps) {
     toast({
       title: isFavorite ? "Eliminado de favoritos" : "Añadido a favoritos",
       description: isFavorite
-        ? "El anuncio ha sido eliminado de tus favoritos"
-        : "El anuncio ha sido añadido a tus favoritos",
+        ? "El adiso ha sido eliminado de tus favoritos"
+        : "El adiso ha sido añadido a tus favoritos",
     })
   }
 
@@ -79,19 +81,19 @@ export function AnuncioSidebar({ anuncio, session }: AnuncioSidebarProps) {
           <HoverCard>
             <HoverCardTrigger asChild>
               <Link
-                href={`/usuarios/${anuncio.user.id}`}
+                href={`/usuarios/${adiso.user.id}`}
                 className="flex items-center gap-3 hover:opacity-80"
               >
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={anuncio.user.image || undefined} />
+                  <AvatarImage src={adiso.user.image || undefined} />
                   <AvatarFallback>
-                    {anuncio.user.name?.slice(0, 2).toUpperCase()}
+                    {adiso.user.name?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
-                  <p className="font-medium leading-none">{anuncio.user.name}</p>
+                  <p className="font-medium leading-none">{adiso.user.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {anuncio.user.anuncios.length} anuncios
+                    {adiso.user.adisos.length} adisos
                   </p>
                 </div>
               </Link>
@@ -99,12 +101,12 @@ export function AnuncioSidebar({ anuncio, session }: AnuncioSidebarProps) {
             <HoverCardContent className="w-80">
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  Miembro desde {formatDate(anuncio.user.createdAt)}
+                  Miembro desde {formatDate(adiso.user.createdAt)}
                 </p>
                 <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
                   <span className="text-sm">
-                    {anuncio.user.anuncios.length} anuncios publicados
+                    {adiso.user.adisos.length} adisos publicados
                   </span>
                 </div>
               </div>

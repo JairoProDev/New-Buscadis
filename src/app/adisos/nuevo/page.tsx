@@ -9,8 +9,8 @@ import { AdisoForm } from "@/components/adisos/adiso-form"
 import { routes } from "@/config/routes"
 
 export const metadata: Metadata = {
-  title: "Publicar anuncio - BuscaDis",
-  description: "Publica tu anuncio en BuscaDis de forma fácil y rápida.",
+  title: "Publicar adiso - BuscaDis",
+  description: "Publica tu adiso en BuscaDis de forma fácil y rápida.",
 }
 
 export default async function NuevoAdisoPage() {
@@ -27,9 +27,9 @@ export default async function NuevoAdisoPage() {
   return (
     <div className="container max-w-2xl space-y-8 py-8">
       <div>
-        <h1 className="text-2xl font-bold">Publicar anuncio</h1>
+        <h1 className="text-2xl font-bold">Publicar adiso</h1>
         <p className="mt-2 text-muted-foreground">
-          Completa el formulario con los detalles de tu anuncio.
+          Completa el formulario con los detalles de tu adiso.
         </p>
       </div>
       <AdisoForm categorias={categorias} />

@@ -28,12 +28,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
-import { Anuncio as Adiso, User, Categoria } from "@prisma/client"
+import { Adiso as Adiso, User, Categoria } from "@prisma/client"
 
 interface AdisoActionsProps {
   adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }

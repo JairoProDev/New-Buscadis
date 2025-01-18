@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge"
 import { formatPrice, formatDate } from "@/lib/utils"
-import { Anuncio as Adiso, User, Categoria } from "@prisma/client"
+import { Adiso as Adiso, User, Categoria } from "@prisma/client"
 import { Package, MapPin, Clock, Tag } from "lucide-react"
 
 interface AdisoHeaderProps {
   adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }

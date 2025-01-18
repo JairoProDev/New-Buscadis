@@ -23,12 +23,12 @@ export default async function PerfilPage() {
   const user = await db.user.findUnique({
     where: { email: session.user.email },
     include: {
-      anuncios: {
+      adisos: {
         orderBy: { createdAt: "desc" },
         take: 5,
       },
       favoritos: {
-        include: { anuncio: true },
+        include: { adiso: true },
         orderBy: { createdAt: "desc" },
         take: 5,
       },
@@ -55,7 +55,7 @@ export default async function PerfilPage() {
       <Tabs defaultValue="perfil" className="space-y-4">
         <TabsList>
           <TabsTrigger value="perfil">Perfil</TabsTrigger>
-          <TabsTrigger value="anuncios">Mis Anuncios</TabsTrigger>
+          <TabsTrigger value="adisos">Mis Adisos</TabsTrigger>
           <TabsTrigger value="favoritos">Favoritos</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
         </TabsList>
@@ -64,47 +64,47 @@ export default async function PerfilPage() {
             <PerfilForm user={user} />
           </div>
         </TabsContent>
-        <TabsContent value="anuncios" className="space-y-4">
-          {user.anuncios.length > 0 ? (
+        <TabsContent value="adisos" className="space-y-4">
+          {user.adisos.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {user.anuncios.map((anuncio) => (
+              {user.adisos.map((adiso) => (
                 <div
-                  key={anuncio.id}
+                  key={adiso.id}
                   className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
                 >
-                  <h3 className="font-semibold">{anuncio.titulo}</h3>
+                  <h3 className="font-semibold">{adiso.titulo}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {anuncio.descripcion}
+                    {adiso.descripcion}
                   </p>
-                  <p className="mt-2 font-medium">€{anuncio.precio}</p>
+                  <p className="mt-2 font-medium">€{adiso.precio}</p>
                 </div>
               ))}
             </div>
           ) : (
             <p className="text-muted-foreground">
-              Aún no has publicado ningún anuncio
+              Aún no has publicado ningún adiso
             </p>
           )}
         </TabsContent>
         <TabsContent value="favoritos" className="space-y-4">
           {user.favoritos.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {user.favoritos.map(({ anuncio }) => (
+              {user.favoritos.map(({ adiso }) => (
                 <div
-                  key={anuncio.id}
+                  key={adiso.id}
                   className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
                 >
-                  <h3 className="font-semibold">{anuncio.titulo}</h3>
+                  <h3 className="font-semibold">{adiso.titulo}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {anuncio.descripcion}
+                    {adiso.descripcion}
                   </p>
-                  <p className="mt-2 font-medium">€{anuncio.precio}</p>
+                  <p className="mt-2 font-medium">€{adiso.precio}</p>
                 </div>
               ))}
             </div>
           ) : (
             <p className="text-muted-foreground">
-              No tienes anuncios guardados en favoritos
+              No tienes adisos guardados en favoritos
             </p>
           )}
         </TabsContent>

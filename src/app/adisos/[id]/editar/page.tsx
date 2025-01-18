@@ -15,8 +15,8 @@ interface EditarAdisoPageProps {
 }
 
 export const metadata: Metadata = {
-  title: "Editar anuncio - BuscaDis",
-  description: "Edita los detalles de tu anuncio en BuscaDis.",
+  title: "Editar adiso - BuscaDis",
+  description: "Edita los detalles de tu adiso en BuscaDis.",
 }
 
 export default async function EditarAdisoPage({ params }: EditarAdisoPageProps) {
@@ -59,9 +59,9 @@ export default async function EditarAdisoPage({ params }: EditarAdisoPageProps) 
   return (
     <div className="container max-w-2xl space-y-8 py-8">
       <div>
-        <h1 className="text-2xl font-bold">Editar anuncio</h1>
+        <h1 className="text-2xl font-bold">Editar adiso</h1>
         <p className="mt-2 text-muted-foreground">
-          Actualiza los detalles de tu anuncio.
+          Actualiza los detalles de tu adiso.
         </p>
       </div>
       <AdisoForm

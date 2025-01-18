@@ -1,16 +1,18 @@
-import { Anuncio, User, Categoria } from "@prisma/client"
+"use client"
+
+import { Adiso, User, Categoria } from "@prisma/client"
 import { motion } from "framer-motion"
 
-interface AnuncioContentProps {
-  anuncio: Anuncio & {
+interface AdisoContentProps {
+  adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }
 }
 
-export function AnuncioContent({ anuncio }: AnuncioContentProps) {
+export function AdisoContent({ adiso }: AdisoContentProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -21,7 +23,7 @@ export function AnuncioContent({ anuncio }: AnuncioContentProps) {
       <div>
         <h2 className="text-xl font-semibold tracking-tight">Descripción</h2>
         <div className="mt-4 whitespace-pre-wrap text-muted-foreground">
-          {anuncio.descripcion}
+          {adiso.descripcion}
         </div>
       </div>
 
@@ -33,13 +35,13 @@ export function AnuncioContent({ anuncio }: AnuncioContentProps) {
               Condición
             </dt>
             <dd>
-              {anuncio.condicion === "NUEVO"
+              {adiso.condicion === "NUEVO"
                 ? "Nuevo"
-                : anuncio.condicion === "COMO_NUEVO"
+                : adiso.condicion === "COMO_NUEVO"
                 ? "Como nuevo"
-                : anuncio.condicion === "BUEN_ESTADO"
+                : adiso.condicion === "BUEN_ESTADO"
                 ? "Buen estado"
-                : anuncio.condicion === "USADO"
+                : adiso.condicion === "USADO"
                 ? "Usado"
                 : "Para piezas"}
             </dd>
@@ -48,7 +50,7 @@ export function AnuncioContent({ anuncio }: AnuncioContentProps) {
             <dt className="text-sm font-medium text-muted-foreground">
               Ubicación
             </dt>
-            <dd>{anuncio.ubicacion}</dd>
+            <dd>{adiso.ubicacion}</dd>
           </div>
           <div className="space-y-1">
             <dt className="text-sm font-medium text-muted-foreground">
@@ -56,10 +58,10 @@ export function AnuncioContent({ anuncio }: AnuncioContentProps) {
             </dt>
             <dd>
               <a
-                href={`/categorias/${anuncio.categoria.slug}`}
+                href={`/categorias/${adiso.categoria.slug}`}
                 className="hover:text-primary"
               >
-                {anuncio.categoria.nombre}
+                {adiso.categoria.nombre}
               </a>
             </dd>
           </div>
@@ -67,19 +69,19 @@ export function AnuncioContent({ anuncio }: AnuncioContentProps) {
             <dt className="text-sm font-medium text-muted-foreground">
               Referencia
             </dt>
-            <dd>{anuncio.id}</dd>
+            <dd>{adiso.id}</dd>
           </div>
           <div className="space-y-1">
             <dt className="text-sm font-medium text-muted-foreground">
               Envío disponible
             </dt>
-            <dd>{anuncio.envio ? "Sí" : "No"}</dd>
+            <dd>{adiso.envio ? "Sí" : "No"}</dd>
           </div>
           <div className="space-y-1">
             <dt className="text-sm font-medium text-muted-foreground">
               Precio negociable
             </dt>
-            <dd>{anuncio.precioNegociable ? "Sí" : "No"}</dd>
+            <dd>{adiso.precioNegociable ? "Sí" : "No"}</dd>
           </div>
         </dl>
       </div>
@@ -93,7 +95,7 @@ export function AnuncioContent({ anuncio }: AnuncioContentProps) {
           <li>Revisa el artículo antes de comprarlo</li>
           <li>Reúnete en un lugar público y seguro</li>
           <li>Verifica la identidad del vendedor</li>
-          <li>Guarda toda la información del anuncio</li>
+          <li>Guarda toda la información del adiso</li>
         </ul>
       </div>
     </motion.div>

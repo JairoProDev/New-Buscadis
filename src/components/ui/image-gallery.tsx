@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"

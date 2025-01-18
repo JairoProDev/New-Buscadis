@@ -120,7 +120,7 @@ export default async function AdisoPage({ params }: AdisoPageProps) {
         </Link>
         <span>/</span>
         <Link href={routes.adisos.index} className="hover:text-foreground">
-          Anuncios
+          Adisos
         </Link>
         <span>/</span>
         <Link
@@ -252,7 +252,7 @@ export default async function AdisoPage({ params }: AdisoPageProps) {
       {relacionados.length > 0 && (
         <section className="space-y-6">
           <h2 className="text-2xl font-bold tracking-tight">
-            Anuncios relacionados
+            Adisos relacionados
           </h2>
           <AdisosRelacionados adisos={relacionados} />
         </section>

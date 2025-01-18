@@ -7,8 +7,8 @@ import { PremiumFilters } from "@/components/search/premium-filters"
 import { SearchResults } from "@/components/search/search-results"
 
 export const metadata: Metadata = {
-  title: "Anuncios - BuscaDis",
-  description: "Explora todos los anuncios disponibles en BuscaDis.",
+  title: "Adisos - BuscaDis",
+  description: "Explora todos los adisos disponibles en BuscaDis.",
 }
 
 const filterGroups = [
@@ -97,7 +97,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </aside>
       <main className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">Anuncios</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Adisos</h1>
           <SearchCommand className="w-full max-w-sm" />
         </div>
         <SearchResults searchParams={searchParams} />

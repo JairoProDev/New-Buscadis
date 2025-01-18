@@ -18,7 +18,7 @@ export default function PrivacidadPage() {
           </p>
           <ul className="mt-2 list-disc pl-6">
             <li>Crear una cuenta</li>
-            <li>Publicar anuncios</li>
+            <li>Publicar adisos</li>
             <li>Contactar con otros usuarios</li>
             <li>Comunicarse con nuestro servicio de atención al cliente</li>
           </ul>

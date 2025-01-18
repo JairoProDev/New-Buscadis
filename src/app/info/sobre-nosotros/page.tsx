@@ -7,7 +7,7 @@ import { routes } from "@/config/routes"
 
 export const metadata: Metadata = {
   title: "Sobre Nosotros - BuscaDis",
-  description: "Conoce más sobre BuscaDis, la plataforma de anuncios clasificados accesible para todos.",
+  description: "Conoce más sobre BuscaDis, la plataforma de adisos clasificados accesible para todos.",
 }
 
 export default function SobreNosotrosPage() {
@@ -54,7 +54,7 @@ export default function SobreNosotrosPage() {
         <h2 className="text-center text-3xl font-bold">Nuestra Historia</h2>
         <div className="mt-8 space-y-6 text-muted-foreground">
           <p>
-            BuscaDis nació de la necesidad de crear una plataforma de anuncios clasificados
+            BuscaDis nació de la necesidad de crear una plataforma de adisos clasificados
             verdaderamente accesible para todos. Nos dimos cuenta de que muchas personas
             enfrentaban barreras al intentar comprar y vender en línea.
           </p>
@@ -64,7 +64,7 @@ export default function SobreNosotrosPage() {
             que el comercio local sea más fácil y seguro para todos.
           </p>
           <p>
-            Hoy, BuscaDis es más que una plataforma de anuncios: es una comunidad
+            Hoy, BuscaDis es más que una plataforma de adisos: es una comunidad
             vibrante donde las personas pueden conectarse, comerciar y crecer juntas.
           </p>
         </div>
@@ -87,10 +87,10 @@ export default function SobreNosotrosPage() {
         </p>
         <div className="mt-8 flex justify-center gap-4">
           <Button size="lg" asChild>
-            <Link href={routes.adisos.new}>Publicar anuncio</Link>
+            <Link href={routes.adisos.new}>Publicar adiso</Link>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            <Link href={routes.adisos.index}>Explorar anuncios</Link>
+            <Link href={routes.adisos.index}>Explorar adisos</Link>
           </Button>
         </div>
       </section>

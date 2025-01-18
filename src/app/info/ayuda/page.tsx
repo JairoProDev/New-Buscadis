@@ -30,15 +30,15 @@ export default function AyudaPage() {
             <div>
               <h3 className="text-lg font-semibold">¿Qué es BuscaDis?</h3>
               <p className="mt-2 text-muted-foreground">
-                BuscaDis es una plataforma de anuncios clasificados diseñada con un enfoque
+                BuscaDis es una plataforma de adisos clasificados diseñada con un enfoque
                 en la accesibilidad, permitiendo a todos comprar y vender de manera fácil y segura.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold">¿Es gratis usar BuscaDis?</h3>
               <p className="mt-2 text-muted-foreground">
-                Sí, publicar y buscar anuncios es completamente gratuito. Ofrecemos servicios
-                premium opcionales para destacar tus anuncios.
+                Sí, publicar y buscar adisos es completamente gratuito. Ofrecemos servicios
+                premium opcionales para destacar tus adisos.
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function AyudaPage() {
             <div>
               <h3 className="text-lg font-semibold">¿Cómo contacto a un vendedor?</h3>
               <p className="mt-2 text-muted-foreground">
-                En cada anuncio encontrarás un botón de "Contactar" que te permitirá
+                En cada adiso encontrarás un botón de "Contactar" que te permitirá
                 enviar un mensaje al vendedor directamente.
               </p>
             </div>
@@ -91,17 +91,17 @@ export default function AyudaPage() {
           <h2 className="text-2xl font-bold">Vender</h2>
           <div className="mt-6 space-y-6">
             <div>
-              <h3 className="text-lg font-semibold">¿Cómo publico un anuncio?</h3>
+              <h3 className="text-lg font-semibold">¿Cómo publico un adiso?</h3>
               <p className="mt-2 text-muted-foreground">
-                Haz clic en "Publicar anuncio", selecciona una categoría y completa
+                Haz clic en "Publicar adiso", selecciona una categoría y completa
                 el formulario con los detalles de tu artículo. Es rápido y fácil.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">¿Cómo destaco mi anuncio?</h3>
+              <h3 className="text-lg font-semibold">¿Cómo destaco mi adiso?</h3>
               <p className="mt-2 text-muted-foreground">
-                Ofrecemos varias opciones para destacar tu anuncio. Puedes elegir
-                entre diferentes paquetes premium al publicar o editar tu anuncio.
+                Ofrecemos varias opciones para destacar tu adiso. Puedes elegir
+                entre diferentes paquetes premium al publicar o editar tu adiso.
               </p>
             </div>
           </div>

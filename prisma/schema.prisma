@@ -13,18 +13,17 @@ datasource db {
 model Account {
   id                String  @id @default(cuid())
   userId            String
-  type             String
-  provider         String
+  type              String
+  provider          String
   providerAccountId String
-  refresh_token    String? @db.Text
-  access_token     String? @db.Text
-  expires_at       Int?
-  token_type       String?
-  scope            String?
-  id_token         String? @db.Text
-  session_state    String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -42,6 +41,7 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
+  password      String?
   image         String?
   telefono      String?
   ubicacion     String?
@@ -51,7 +51,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
-  adisos        Adiso[]
+  adisos      Adiso[]
   favoritos     Favorito[]
 }
 
@@ -70,7 +70,7 @@ model Adiso {
   precio          Float
   imagenes        String[]
   ubicacion       String
-  condicion       String
+  condicion       Condicion @default(NUEVO)
   envio           Boolean   @default(false)
   precioNegociable Boolean  @default(false)
   estado          Estado    @default(ACTIVO)
@@ -84,19 +84,20 @@ model Adiso {
 }
 
 model Categoria {
-  id      String   @id @default(cuid())
-  nombre  String   @unique
-  slug    String   @unique
-  adisos  Adiso[]
+  id       String    @id @default(cuid())
+  nombre   String    @unique
+  slug     String    @unique
+  orden    Int       @default(0)
+  adisos Adiso[]
 }
 
 model Favorito {
   id        String   @id @default(cuid())
   userId    String
-  adisoId   String
+  adisoId String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  adiso     Adiso    @relation(fields: [adisoId], references: [id], onDelete: Cascade)
+  adiso   Adiso  @relation(fields: [adisoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, adisoId])
 }
@@ -111,4 +112,12 @@ enum Estado {
   PAUSADO
   VENDIDO
   ELIMINADO
+}
+
+enum Condicion {
+  NUEVO
+  COMO_NUEVO
+  BUEN_ESTADO
+  USADO
+  PARA_PIEZAS
 }

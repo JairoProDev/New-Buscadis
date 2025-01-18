@@ -28,19 +28,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/components/ui/use-toast"
-import { Anuncio, User, Categoria } from "@prisma/client"
+import { Adiso, User, Categoria } from "@prisma/client"
 
-interface AnuncioActionsProps {
-  anuncio: Anuncio & {
+interface AdisoActionsProps {
+  adiso: Adiso & {
     user: Pick<User, "id" | "name" | "image" | "createdAt"> & {
-      anuncios: { id: string }[]
+      adisos: { id: string }[]
     }
     categoria: Categoria
   }
   isOwner: boolean
 }
 
-export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
+export function AdisoActions({ adiso, isOwner }: AdisoActionsProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
@@ -51,31 +51,31 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
   const handlePauseToggle = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch(`/api/anuncios/${anuncio.id}`, {
+      const res = await fetch(`/api/adisos/${adiso.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          estado: anuncio.estado === "PAUSADO" ? "ACTIVO" : "PAUSADO",
+          estado: adiso.estado === "PAUSADO" ? "ACTIVO" : "PAUSADO",
         }),
       })
 
       if (!res.ok) throw new Error()
 
       toast({
-        title: anuncio.estado === "PAUSADO" ? "Anuncio activado" : "Anuncio pausado",
+        title: adiso.estado === "PAUSADO" ? "Adiso activado" : "Adiso pausado",
         description:
-          anuncio.estado === "PAUSADO"
-            ? "Tu anuncio ya está visible para todos"
-            : "Tu anuncio ha sido pausado temporalmente",
+          adiso.estado === "PAUSADO"
+            ? "Tu adiso ya está visible para todos"
+            : "Tu adiso ha sido pausado temporalmente",
       })
 
       router.refresh()
     } catch {
       toast({
         title: "Error",
-        description: "No se pudo actualizar el estado del anuncio",
+        description: "No se pudo actualizar el estado del adiso",
         variant: "destructive",
       })
     } finally {
@@ -86,7 +86,7 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
   const handleMarkAsSold = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch(`/api/anuncios/${anuncio.id}`, {
+      const res = await fetch(`/api/adisos/${adiso.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -100,14 +100,14 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
 
       toast({
         title: "¡Vendido!",
-        description: "Tu anuncio ha sido marcado como vendido",
+        description: "Tu adiso ha sido marcado como vendido",
       })
 
       router.refresh()
     } catch {
       toast({
         title: "Error",
-        description: "No se pudo marcar el anuncio como vendido",
+        description: "No se pudo marcar el adiso como vendido",
         variant: "destructive",
       })
     } finally {
@@ -118,22 +118,22 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
   const handleDelete = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch(`/api/anuncios/${anuncio.id}`, {
+      const res = await fetch(`/api/adisos/${adiso.id}`, {
         method: "DELETE",
       })
 
       if (!res.ok) throw new Error()
 
       toast({
-        title: "Anuncio eliminado",
-        description: "Tu anuncio ha sido eliminado permanentemente",
+        title: "Adiso eliminado",
+        description: "Tu adiso ha sido eliminado permanentemente",
       })
 
       router.push("/perfil")
     } catch {
       toast({
         title: "Error",
-        description: "No se pudo eliminar el anuncio",
+        description: "No se pudo eliminar el adiso",
         variant: "destructive",
       })
     } finally {
@@ -157,21 +157,21 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem
-            onSelect={() => router.push(`/anuncios/${anuncio.id}/editar`)}
+            onSelect={() => router.push(`/adisos/${adiso.id}/editar`)}
           >
             <Edit className="mr-2 h-4 w-4" />
-            Editar anuncio
+            Editar adiso
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handlePauseToggle}>
-            {anuncio.estado === "PAUSADO" ? (
+            {adiso.estado === "PAUSADO" ? (
               <>
                 <Play className="mr-2 h-4 w-4" />
-                Activar anuncio
+                Activar adiso
               </>
             ) : (
               <>
                 <Pause className="mr-2 h-4 w-4" />
-                Pausar anuncio
+                Pausar adiso
               </>
             )}
           </DropdownMenuItem>
@@ -185,7 +185,7 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
             className="text-red-600"
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Eliminar anuncio
+            Eliminar adiso
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -193,9 +193,9 @@ export function AnuncioActions({ anuncio, isOwner }: AnuncioActionsProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar anuncio?</AlertDialogTitle>
+            <AlertDialogTitle>¿Eliminar adiso?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El anuncio será eliminado
+              Esta acción no se puede deshacer. El adiso será eliminado
               permanentemente de nuestros servidores.
             </AlertDialogDescription>
           </AlertDialogHeader>

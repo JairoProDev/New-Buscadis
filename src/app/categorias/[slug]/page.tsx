@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: CategoriaPageProps): Promise<
 
   return {
     title: `${categoria.nombre} - BuscaDis`,
-    description: `Explora anuncios en la categoría ${categoria.nombre} en BuscaDis.`,
+    description: `Explora adisos en la categoría ${categoria.nombre} en BuscaDis.`,
   }
 }
 
