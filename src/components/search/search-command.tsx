@@ -1,19 +1,29 @@
+import * as React from "react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Loader2 } from "lucide-react"
 import { useDebounce } from "use-debounce"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "cmdk"
+
 import { cn } from "@/lib/utils"
-import { PremiumBadge } from "@/components/ui/premium-badge"
+import { Button } from "@/components/ui/button"
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Badge } from "@/components/ui/badge"
 import { PremiumImage } from "@/components/ui/premium-image"
+import { routes } from "@/config/routes"
 
 interface SearchResult {
   id: string
   titulo: string
   descripcion: string
   precio: number
-  imagenes: string
+  imagenes: string[]
   isPremium: boolean
   usuario: {
     name: string
@@ -83,9 +93,8 @@ export function SearchCommand({ filters, className, ...props }: SearchCommandPro
         if (!res.ok) throw new Error("Error en la búsqueda")
         
         const data = await res.json()
-        setResults(data.anuncios)
+        setResults(data.adisos)
       } catch (error) {
-        console.error("Error al buscar:", error)
         setResults([])
       } finally {
         setIsLoading(false)
@@ -97,7 +106,7 @@ export function SearchCommand({ filters, className, ...props }: SearchCommandPro
 
   const handleSelect = React.useCallback((result: SearchResult) => {
     setOpen(false)
-    router.push(`/anuncios/${result.id}`)
+    router.push(routes.adisos.show(result.id))
   }, [router])
 
   return (
@@ -108,7 +117,7 @@ export function SearchCommand({ filters, className, ...props }: SearchCommandPro
         onClick={() => setOpen(true)}
       >
         <span className="hidden lg:inline-flex">
-          Buscar anuncios...
+          Buscar adisos...
         </span>
         <span className="inline-flex lg:hidden">Buscar...</span>
         <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
@@ -118,7 +127,7 @@ export function SearchCommand({ filters, className, ...props }: SearchCommandPro
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
-          placeholder="Buscar anuncios..."
+          placeholder="Buscar adisos..."
           value={query}
           onValueChange={setQuery}
         />
@@ -149,7 +158,7 @@ export function SearchCommand({ filters, className, ...props }: SearchCommandPro
                   >
                     <div className="flex items-start gap-4">
                       <PremiumImage
-                        src={JSON.parse(result.imagenes)[0] || "/placeholder.png"}
+                        src={result.imagenes[0] || "/placeholder.png"}
                         alt={result.titulo}
                         width={80}
                         height={80}

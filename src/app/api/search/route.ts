@@ -1,111 +1,80 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { Prisma } from "@prisma/client"
-
 import { db } from "@/lib/db"
+import { Prisma } from "@prisma/client"
 
 const searchParamsSchema = z.object({
   query: z.string().optional(),
   categoria: z.string().optional(),
-  precioMin: z.number().optional(),
-  precioMax: z.number().optional(),
+  precioMin: z.string().optional(),
+  precioMax: z.string().optional(),
   condicion: z.string().optional(),
   ubicacion: z.string().optional(),
-  ordenar: z.enum(["reciente", "precio_asc", "precio_desc", "relevancia"]).optional(),
-  soloEnvio: z.boolean().optional(),
-  page: z.number().default(1),
-  perPage: z.number().default(12),
+  soloEnvio: z.string().optional(),
+  ordenar: z.string().optional(),
+  page: z.string().optional(),
+  perPage: z.string().optional(),
 })
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(req.url)
+    const { searchParams } = new URL(request.url)
     const params = Object.fromEntries(searchParams.entries())
-    
-    // Convertir tipos
-    const validatedParams = searchParamsSchema.parse({
-      ...params,
-      precioMin: params.precioMin ? Number(params.precioMin) : undefined,
-      precioMax: params.precioMax ? Number(params.precioMax) : undefined,
-      soloEnvio: params.soloEnvio === "true",
-      page: Number(params.page || 1),
-      perPage: Number(params.perPage || 12),
-    })
+    const validatedParams = searchParamsSchema.parse(params)
 
-    // Construir la consulta base
-    const where: Prisma.AnuncioWhereInput = {
+    const page = Number(validatedParams.page) || 1
+    const perPage = Number(validatedParams.perPage) || 10
+
+    const where: Prisma.AdisoWhereInput = {
       estado: "ACTIVO",
+      ...(validatedParams.query && {
+        OR: [
+          { titulo: { contains: validatedParams.query, mode: "insensitive" } },
+          { descripcion: { contains: validatedParams.query, mode: "insensitive" } },
+        ],
+      }),
+      ...(validatedParams.categoria && {
+        categoriaId: validatedParams.categoria,
+      }),
+      ...(validatedParams.precioMin && {
+        precio: { gte: Number(validatedParams.precioMin) },
+      }),
+      ...(validatedParams.precioMax && {
+        precio: { lte: Number(validatedParams.precioMax) },
+      }),
+      ...(validatedParams.condicion && {
+        condicion: validatedParams.condicion,
+      }),
+      ...(validatedParams.ubicacion && {
+        ubicacion: { contains: validatedParams.ubicacion, mode: "insensitive" },
+      }),
+      ...(validatedParams.soloEnvio === "true" && {
+        envio: true,
+      }),
     }
 
-    // Búsqueda por texto
-    if (validatedParams.query) {
-      where.OR = [
-        { titulo: { contains: validatedParams.query, mode: "insensitive" } },
-        { descripcion: { contains: validatedParams.query, mode: "insensitive" } },
-      ]
+    const orderBy: Prisma.AdisoOrderByWithRelationInput = {
+      ...(validatedParams.ordenar === "precio_asc" && { precio: "asc" }),
+      ...(validatedParams.ordenar === "precio_desc" && { precio: "desc" }),
+      ...(validatedParams.ordenar === "relevancia" && {
+        _relevance: {
+          fields: ["titulo", "descripcion"],
+          search: validatedParams.query || "",
+          sort: "desc",
+        },
+      }),
+      createdAt: validatedParams.ordenar === "reciente" ? "desc" : undefined,
     }
 
-    // Filtros
-    if (validatedParams.categoria) {
-      where.categoriaId = validatedParams.categoria
-    }
-
-    if (validatedParams.precioMin || validatedParams.precioMax) {
-      where.precio = {
-        ...(validatedParams.precioMin && { gte: validatedParams.precioMin }),
-        ...(validatedParams.precioMax && { lte: validatedParams.precioMax }),
-      }
-    }
-
-    if (validatedParams.condicion) {
-      where.condicion = validatedParams.condicion as any
-    }
-
-    if (validatedParams.ubicacion) {
-      where.ubicacion = {
-        contains: validatedParams.ubicacion,
-        mode: "insensitive",
-      }
-    }
-
-    if (validatedParams.soloEnvio) {
-      where.envio = true
-    }
-
-    // Ordenamiento
-    let orderBy: Prisma.AnuncioOrderByWithRelationInput = { createdAt: "desc" }
-    
-    switch (validatedParams.ordenar) {
-      case "precio_asc":
-        orderBy = { precio: "asc" }
-        break
-      case "precio_desc":
-        orderBy = { precio: "desc" }
-        break
-      case "relevancia":
-        orderBy = [
-          { isPremium: "desc" },
-          { vistas: "desc" },
-          { createdAt: "desc" },
-        ]
-        break
-      default:
-        orderBy = { createdAt: "desc" }
-    }
-
-    // Ejecutar consulta con paginación
-    const skip = (validatedParams.page - 1) * validatedParams.perPage
-    
-    const [anuncios, total] = await Promise.all([
-      db.anuncio.findMany({
+    const [adisos, total] = await Promise.all([
+      db.adiso.findMany({
         where,
         orderBy,
-        skip,
-        take: validatedParams.perPage,
+        skip: (page - 1) * perPage,
+        take: perPage,
         include: {
           usuario: {
             select: {
-              id: true,
               name: true,
               image: true,
               isPremium: true,
@@ -113,7 +82,6 @@ export async function GET(req: Request) {
           },
           categoria: {
             select: {
-              id: true,
               nombre: true,
               slug: true,
             },
@@ -126,30 +94,22 @@ export async function GET(req: Request) {
           },
         },
       }),
-      db.anuncio.count({ where }),
+      db.adiso.count({ where }),
     ])
 
-    // Calcular metadata de paginación
-    const totalPages = Math.ceil(total / validatedParams.perPage)
-    const hasMore = validatedParams.page < totalPages
-
     return NextResponse.json({
-      anuncios,
-      metadata: {
-        total,
-        page: validatedParams.page,
-        perPage: validatedParams.perPage,
-        totalPages,
-        hasMore,
-      },
+      adisos,
+      total,
+      page,
+      perPage,
+      totalPages: Math.ceil(total / perPage),
     })
   } catch (error) {
-    console.error("Error en la búsqueda:", error)
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.errors), { status: 400 })
+      return NextResponse.json({ error: error.errors }, { status: 400 })
     }
-    return new NextResponse(
-      "Error al procesar la búsqueda",
+    return NextResponse.json(
+      { error: "Error al buscar adisos" },
       { status: 500 }
     )
   }

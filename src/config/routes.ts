@@ -5,16 +5,16 @@ export const routes = {
     register: "/auth/register",
     verify: "/auth/verify",
     error: "/auth/error",
-    logout: "/auth/logout",
+    signOut: "/auth/signout",
   },
   adisos: {
     index: "/adisos",
-    show: (id: string) => `/adisos/${id}`,
-    edit: (id: string) => `/adisos/${id}/editar`,
+    show: (id: string) => `/adisos/${id}` as const,
+    edit: (id: string) => `/adisos/${id}/editar` as const,
     new: "/adisos/nuevo",
   },
   categorias: {
-    show: (slug: string) => `/categorias/${slug}`,
+    show: (slug: string) => `/categorias/${slug}` as const,
   },
   premium: {
     index: "/premium",
@@ -27,7 +27,7 @@ export const routes = {
     cookies: "/legal/cookies",
   },
   info: {
-    about: "/info/nosotros",
+    about: "/info/sobre-nosotros",
     contact: "/info/contacto",
     help: "/info/ayuda",
     faq: "/info/faq",
@@ -37,4 +37,6 @@ export const routes = {
     facebook: "https://facebook.com/buscadis",
     instagram: "https://instagram.com/buscadis",
   },
-} as const 
+} as const
+
+export type Routes = typeof routes 

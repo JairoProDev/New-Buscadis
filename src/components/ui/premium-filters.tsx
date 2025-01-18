@@ -69,8 +69,8 @@ export function PremiumFilters({
 
   const hasActiveFilters = Object.keys(selectedFilters).length > 0
 
-  const handleFilterChange = (name: keyof FilterState, value: string | number | boolean | undefined) => {
-    onFilterChange(name, value)
+  const handleFilterChange = (groupId: string, value: string | number | boolean | Array<string | number | boolean> | undefined) => {
+    onFilterChange(groupId as keyof FilterState, value as any)
   }
 
   return (
@@ -136,9 +136,8 @@ export function PremiumFilters({
                           type="range"
                           min={group.range.min}
                           max={group.range.max}
+                          step={group.range.step}
                           value={selectedFilters[group.id]?.[0] ?? group.range.min}
-                          aria-label={`Precio mínimo para ${group.label}`}
-                          title={`Precio mínimo para ${group.label}`}
                           onChange={(e) =>
                             handleFilterChange(group.id, [
                               parseFloat(e.target.value),
@@ -146,14 +145,14 @@ export function PremiumFilters({
                             ])
                           }
                           className="range-input"
+                          aria-label={`Valor mínimo para ${group.label}`}
                         />
                         <input
                           type="range"
                           min={group.range.min}
                           max={group.range.max}
+                          step={group.range.step}
                           value={selectedFilters[group.id]?.[1] ?? group.range.max}
-                          aria-label={`Precio máximo para ${group.label}`}
-                          title={`Precio máximo para ${group.label}`}
                           onChange={(e) =>
                             handleFilterChange(group.id, [
                               selectedFilters[group.id]?.[0] ?? group.range.min,
@@ -161,6 +160,7 @@ export function PremiumFilters({
                             ])
                           }
                           className="range-input"
+                          aria-label={`Valor máximo para ${group.label}`}
                         />
                       </div>
                     ) : group.type === "single" ? (
@@ -194,17 +194,12 @@ export function PremiumFilters({
                           >
                             <input
                               type="checkbox"
-                              checked={selectedFilters[group.id]?.includes(
-                                option.value
-                              )}
+                              checked={Array.isArray(selectedFilters[group.id]) && selectedFilters[group.id].includes(option.value)}
                               onChange={(e) => {
-                                const currentValues =
-                                  selectedFilters[group.id] || []
+                                const currentValues = (selectedFilters[group.id] as Array<string | number | boolean>) || []
                                 const newValues = e.target.checked
                                   ? [...currentValues, option.value]
-                                  : currentValues.filter(
-                                      (v: any) => v !== option.value
-                                    )
+                                  : currentValues.filter((v) => v !== option.value)
                                 handleFilterChange(
                                   group.id,
                                   newValues.length ? newValues : undefined
@@ -240,21 +235,14 @@ export function PremiumFilters({
 
             const renderValue = () => {
               if (group.type === "range" && Array.isArray(value)) {
-                return `${value[0]}${group.range?.unit} - ${value[1]}${
-                  group.range?.unit
-                }`
+                return `${value[0]}${group.range?.unit} - ${value[1]}${group.range?.unit}`
               }
               if (Array.isArray(value)) {
                 return value
-                  .map(
-                    (v) =>
-                      group.options?.find((opt) => opt.value === v)?.label ?? v
-                  )
+                  .map((v) => group.options?.find((opt) => opt.value === v)?.label ?? v)
                   .join(", ")
               }
-              return (
-                group.options?.find((opt) => opt.value === value)?.label ?? value
-              )
+              return group.options?.find((opt) => opt.value === value)?.label ?? value
             }
 
             return (
@@ -270,7 +258,7 @@ export function PremiumFilters({
                 <button
                   onClick={() => handleFilterChange(groupId, undefined)}
                   className="ml-1 rounded-full p-1 hover:bg-primary/20"
-                  aria-label={`Eliminar filtro ${group.label}`}
+                  aria-label={`Eliminar filtro de ${group.label}`}
                 >
                   <X className="h-3 w-3" />
                 </button>

@@ -18,17 +18,17 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [isFullscreen, setIsFullscreen] = React.useState(false)
 
-  const showPrevious = () => {
+  const showPrevious = React.useCallback(() => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-  }
+  }, [images.length])
 
-  const showNext = () => {
+  const showNext = React.useCallback(() => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-  }
+  }, [images.length])
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = React.useCallback(() => {
     setIsFullscreen((prev) => !prev)
-  }
+  }, [])
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -36,12 +36,14 @@ export function ImageGallery({ images, className }: ImageGalleryProps) {
         showPrevious()
       } else if (e.key === "ArrowRight") {
         showNext()
+      } else if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false)
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [showPrevious, showNext])
+  }, [showPrevious, showNext, isFullscreen])
 
   return (
     <>
