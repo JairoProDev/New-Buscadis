@@ -1,16 +1,17 @@
-import { Metadata } from "next"
+import * as React from "react"
+import Link from "next/link"
 import { notFound } from "next/navigation"
+import { Metadata } from "next"
 import { getServerSession } from "next-auth"
 
-import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { formatPrice } from "@/lib/utils"
+import { authOptions } from "@/lib/auth"
+import { Button } from "@/components/ui/button"
 import { ImageGallery } from "@/components/ui/image-gallery"
-import { AdisoHeader } from "@/components/adisos/adiso-header"
-import { AdisoContent } from "@/components/adisos/adiso-content"
-import { AdisoSidebar } from "@/components/adisos/adiso-sidebar"
-import { AdisoActions } from "@/components/adisos/adiso-actions"
+import { Badge } from "@/components/ui/badge"
 import { AdisosRelacionados } from "@/components/adisos/adisos-relacionados"
+import { AdisoActions } from "@/components/adisos/adiso-actions"
+import { routes } from "@/config/routes"
 
 interface AdisoPageProps {
   params: {
@@ -19,115 +20,243 @@ interface AdisoPageProps {
 }
 
 async function getAdiso(id: string) {
-  const adiso = await db.anuncio.findUnique({
+  const adiso = await db.adiso.findUnique({
     where: { id },
     include: {
-      user: {
+      usuario: {
         select: {
           id: true,
           name: true,
           image: true,
-          createdAt: true,
-          anuncios: {
-            select: { id: true },
-          },
+          isPremium: true,
         },
       },
-      categoria: true,
+      categoria: {
+        select: {
+          nombre: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          favoritos: true,
+          reviews: true,
+        },
+      },
     },
   })
 
-  if (!adiso) {
-    return null
-  }
+  if (!adiso) return null
 
-  return adiso
+  const relacionados = await db.adiso.findMany({
+    where: {
+      OR: [
+        { categoriaId: adiso.categoriaId },
+        { usuarioId: adiso.usuarioId },
+      ],
+      NOT: { id: adiso.id },
+      estado: "ACTIVO",
+    },
+    take: 3,
+    include: {
+      usuario: {
+        select: {
+          name: true,
+          image: true,
+          isPremium: true,
+        },
+      },
+      categoria: {
+        select: {
+          nombre: true,
+          slug: true,
+        },
+      },
+    },
+  })
+
+  return { adiso, relacionados }
 }
 
-export async function generateMetadata({
-  params,
-}: AdisoPageProps): Promise<Metadata> {
-  const adiso = await getAdiso(params.id)
+export async function generateMetadata({ params }: AdisoPageProps): Promise<Metadata> {
+  const data = await getAdiso(params.id)
+  if (!data) return {}
 
-  if (!adiso) {
-    return {
-      title: "Adiso no encontrado",
-    }
-  }
-
+  const { adiso } = data
   return {
-    title: `${adiso.titulo} - ${formatPrice(adiso.precio)} - BuscaDis`,
-    description: adiso.descripcion.slice(0, 160),
+    title: `${adiso.titulo} - BuscaDis`,
+    description: adiso.descripcion,
     openGraph: {
       title: adiso.titulo,
-      description: adiso.descripcion.slice(0, 160),
-      images: JSON.parse(adiso.imagenes)[0],
-      type: "article",
-      authors: adiso.user.name,
-      publishedTime: adiso.createdAt.toISOString(),
-      modifiedTime: adiso.updatedAt.toISOString(),
+      description: adiso.descripcion,
+      images: adiso.imagenes,
     },
     twitter: {
       card: "summary_large_image",
       title: adiso.titulo,
-      description: adiso.descripcion.slice(0, 160),
-      images: JSON.parse(adiso.imagenes)[0],
+      description: adiso.descripcion,
+      images: adiso.imagenes,
     },
   }
 }
 
 export default async function AdisoPage({ params }: AdisoPageProps) {
   const session = await getServerSession(authOptions)
-  const adiso = await getAdiso(params.id)
+  const data = await getAdiso(params.id)
 
-  if (!adiso) {
+  if (!data) {
     notFound()
   }
 
-  const imagenes = JSON.parse(adiso.imagenes)
-  const isOwner = session?.user?.id === adiso.userId
+  const { adiso, relacionados } = data
+  const isOwner = session?.user?.id === adiso.usuarioId
 
   return (
-    <div className="container relative mx-auto space-y-8 px-4 py-6 lg:space-y-12 lg:py-8">
-      {/* Breadcrumbs y acciones */}
-      <div className="flex items-center justify-between">
-        <nav className="flex" aria-label="Breadcrumb">
-          <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <li>
-              <a href="/" className="hover:text-foreground">
-                Inicio
-              </a>
-            </li>
-            <li>/</li>
-            <li>
-              <a href={`/categorias/${adiso.categoria.slug}`} className="hover:text-foreground">
-                {adiso.categoria.nombre}
-              </a>
-            </li>
-            <li>/</li>
-            <li className="truncate">{adiso.titulo}</li>
-          </ol>
-        </nav>
-        <AdisoActions adiso={adiso} isOwner={isOwner} />
+    <div className="container space-y-8 py-8">
+      {/* Breadcrumbs */}
+      <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+        <Link href={routes.home} className="hover:text-foreground">
+          Inicio
+        </Link>
+        <span>/</span>
+        <Link href={routes.adisos.index} className="hover:text-foreground">
+          Anuncios
+        </Link>
+        <span>/</span>
+        <Link
+          href={routes.categorias.show(adiso.categoria.slug)}
+          className="hover:text-foreground"
+        >
+          {adiso.categoria.nombre}
+        </Link>
+      </nav>
+
+      <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+        {/* Main Content */}
+        <div className="space-y-8">
+          {/* Image Gallery */}
+          <ImageGallery
+            images={adiso.imagenes.map((src) => ({
+              src,
+              alt: adiso.titulo,
+            }))}
+          />
+
+          {/* Title and Description */}
+          <div className="space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <h1 className="text-2xl font-bold">{adiso.titulo}</h1>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">€{adiso.precio}</span>
+                  {adiso.precioNegociable && (
+                    <Badge variant="outline">Negociable</Badge>
+                  )}
+                </div>
+              </div>
+              {isOwner && <AdisoActions adiso={adiso} />}
+            </div>
+            <p className="whitespace-pre-wrap text-muted-foreground">
+              {adiso.descripcion}
+            </p>
+          </div>
+
+          {/* Details */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Detalles</h2>
+            <dl className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">
+                  Condición
+                </dt>
+                <dd className="mt-1">{adiso.condicion.replace("_", " ")}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">
+                  Ubicación
+                </dt>
+                <dd className="mt-1">{adiso.ubicacion}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">
+                  Categoría
+                </dt>
+                <dd className="mt-1">{adiso.categoria.nombre}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-muted-foreground">
+                  Envío
+                </dt>
+                <dd className="mt-1">{adiso.envio ? "Disponible" : "No disponible"}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Seller Info */}
+          <div className="rounded-lg border p-4">
+            <div className="flex items-center gap-4">
+              {adiso.usuario.image ? (
+                <img
+                  src={adiso.usuario.image}
+                  alt={adiso.usuario.name || ""}
+                  className="h-12 w-12 rounded-full"
+                />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                  <span className="text-lg font-semibold">
+                    {adiso.usuario.name?.[0]?.toUpperCase() || "U"}
+                  </span>
+                </div>
+              )}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{adiso.usuario.name}</span>
+                  {adiso.usuario.isPremium && (
+                    <Badge variant="premium">PREMIUM</Badge>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {adiso._count.reviews} valoraciones
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2">
+              <Button className="w-full" size="lg">
+                Contactar
+              </Button>
+              {!isOwner && (
+                <Button variant="outline" className="w-full" size="lg">
+                  Añadir a favoritos
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Safety Tips */}
+          <div className="rounded-lg border p-4">
+            <h3 className="font-semibold">Consejos de seguridad</h3>
+            <ul className="mt-2 space-y-2 text-sm text-muted-foreground">
+              <li>• Revisa el artículo antes de comprarlo</li>
+              <li>• Reúnete en un lugar público y seguro</li>
+              <li>• No hagas pagos por adelantado</li>
+              <li>• Reporta cualquier conducta sospechosa</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
-      {/* Contenido principal */}
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ImageGallery images={imagenes} />
-          <AdisoHeader adiso={adiso} />
-          <AdisoContent adiso={adiso} />
-        </div>
-        <div className="lg:col-span-1">
-          <AdisoSidebar adiso={adiso} session={session} />
-        </div>
-      </div>
-
-      {/* Adisos relacionados */}
-      <AdisosRelacionados
-        categoriaId={adiso.categoriaId}
-        adisoId={adiso.id}
-      />
+      {/* Related Listings */}
+      {relacionados.length > 0 && (
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold tracking-tight">
+            Anuncios relacionados
+          </h2>
+          <AdisosRelacionados adisos={relacionados} />
+        </section>
+      )}
     </div>
   )
 } 
