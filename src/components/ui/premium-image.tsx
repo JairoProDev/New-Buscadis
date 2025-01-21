@@ -2,8 +2,6 @@
 
 import * as React from "react"
 import Image, { ImageProps } from "next/image"
-import { motion } from "framer-motion"
-
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -41,21 +39,12 @@ export function PremiumImage({
   const [isLoading, setIsLoading] = React.useState(true)
 
   return (
-    <motion.div
+    <div
       className={cn(
         "overflow-hidden rounded-xl",
         aspectRatioClasses[aspectRatio],
         className
       )}
-      whileHover={
-        hoverEffect
-          ? {
-              scale: hoverScale ? 1.05 : 1,
-              rotate: hoverRotate ? 1 : 0,
-            }
-          : undefined
-      }
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       {loading || isLoading ? (
         <Skeleton
@@ -72,10 +61,11 @@ export function PremiumImage({
         height={height}
         className={cn(
           "h-full w-full object-cover transition-all",
-          isLoading ? "scale-110 blur-lg" : "scale-100 blur-0"
+          isLoading ? "scale-110 blur-lg" : "scale-100 blur-0",
+          hoverEffect && "hover:scale-105 transition-transform duration-300"
         )}
         onLoadingComplete={() => setIsLoading(false)}
       />
-    </motion.div>
+    </div>
   )
 } 

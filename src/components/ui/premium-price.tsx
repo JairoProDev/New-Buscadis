@@ -38,7 +38,7 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
   const [hoveredTier, setHoveredTier] = React.useState<string | null>(null)
 
   return (
-    <div className={className}>
+    <div className={cn("my-8", className)}>
       {/* Billing Toggle */}
       <div className="mb-8 flex justify-center">
         <div className="inline-flex items-center rounded-full border bg-muted p-1.5">
@@ -84,16 +84,16 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
       </div>
 
       {/* Pricing Tiers */}
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {tiers.map((tier) => (
           <motion.div
             key={tier.name}
-            onHoverStart={() => setHoveredTier(tier.name)}
-            onHoverEnd={() => setHoveredTier(null)}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
             className={cn(
-              "relative rounded-2xl border bg-card p-8",
-              tier.highlighted && "border-primary shadow-lg",
-              hoveredTier === tier.name && "border-primary/50"
+              "relative rounded-2xl bg-card p-6 shadow-lg",
+              tier.highlighted && "border-2 border-primary"
             )}
           >
             {/* Glow Effect */}
@@ -191,16 +191,14 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
               </ul>
 
               {/* Button */}
-              <MotionButton
+              <Button
                 className="mt-8 w-full"
                 size="lg"
                 variant={tier.highlighted ? "default" : "outline"}
                 onClick={tier.onSelect}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
                 {tier.buttonText || "Seleccionar plan"}
-              </MotionButton>
+              </Button>
             </div>
           </motion.div>
         ))}

@@ -22,10 +22,8 @@ const PremiumCard = React.forwardRef<HTMLDivElement, PremiumCardProps>(
     ...props 
   }, ref) => {
     return (
-      <motion.div
+      <div
         ref={ref}
-        whileHover={hoverScale ? { scale: 1.02 } : undefined}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className={cn(
           "relative rounded-xl bg-background p-6 shadow-xl",
           gradient && "bg-gradient-to-br from-background via-background/80 to-background/50",
@@ -39,6 +37,7 @@ const PremiumCard = React.forwardRef<HTMLDivElement, PremiumCardProps>(
     )
   }
 )
+
 PremiumCard.displayName = "PremiumCard"
 
 const PremiumCardHeader = React.forwardRef<
