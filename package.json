@@ -41,8 +41,8 @@
     "next": "14.0.4",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.3",
     "react-intersection-observer": "^9.5.3",
     "tailwind-merge": "^2.6.0",
@@ -51,6 +51,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
