@@ -35,8 +35,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.className)}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <AuthProvider>

@@ -42,7 +42,7 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
 
   .dark {
@@ -78,7 +78,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-neutral-200 dark:border-neutral-800;
   }
   body {
     @apply bg-background text-foreground;
@@ -126,9 +126,9 @@
 
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
   }
-  .btn-primary {
+  .btn-default {
     @apply bg-primary text-primary-foreground hover:bg-primary/90;
   }
   .btn-secondary {
@@ -136,6 +136,9 @@
   }
   .btn-ghost {
     @apply hover:bg-accent hover:text-accent-foreground;
+  }
+  .btn-link {
+    @apply underline-offset-4 hover:underline text-primary;
   }
 
   /* Animations */
@@ -166,4 +169,10 @@
 /* Selection */
 ::selection {
   @apply bg-primary/20 text-primary-900;
+}
+
+@layer components {
+  .text-balance {
+    text-wrap: balance;
+  }
 }

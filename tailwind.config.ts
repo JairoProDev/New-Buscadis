@@ -1,12 +1,13 @@
 import type { Config } from 'tailwindcss'
 import { fontFamily } from 'tailwindcss/defaultTheme'
 
-const config: Config = {
+const config = {
   darkMode: ['class'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/styles/**/*.{js,ts,jsx,tsx,mdx,css}',
   ],
   theme: {
     container: {
@@ -107,6 +108,6 @@ const config: Config = {
     require('@tailwindcss/forms'),
     require('@tailwindcss/aspect-ratio'),
   ],
-}
+} satisfies Config
 
 export default config 
