@@ -24,7 +24,7 @@ export default async function HomePage() {
       orderBy: { createdAt: "desc" },
       take: 6,
       include: {
-        usuario: true,
+        user: true,
         categoria: true,
         _count: {
           select: {

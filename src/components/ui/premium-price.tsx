@@ -1,41 +1,32 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
-import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Check } from "lucide-react"
 
-interface PricingFeature {
-  text: string
-  included: boolean
+interface PremiumPriceProps extends React.HTMLAttributes<HTMLDivElement> {
+  tiers: Array<{
+    name: string
+    description: string
+    price: {
+      monthly: number
+      yearly: number
+    }
+    features: Array<{
+      text: string
+      included: boolean
+    }>
+    highlighted?: boolean
+    badge?: string
+    buttonText?: string
+    onSelect?: () => void
+  }>
 }
-
-interface PricingTier {
-  name: string
-  description: string
-  price: {
-    monthly: number
-    yearly: number
-  }
-  features: PricingFeature[]
-  highlighted?: boolean
-  badge?: string
-  buttonText?: string
-  onSelect?: () => void
-}
-
-interface PremiumPriceProps {
-  tiers: PricingTier[]
-  className?: string
-}
-
-const MotionButton = motion(Button)
 
 export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
   const [billingCycle, setBillingCycle] = React.useState<"monthly" | "yearly">("monthly")
-  const [hoveredTier, setHoveredTier] = React.useState<string | null>(null)
 
   return (
     <div className={cn("my-8", className)}>
@@ -52,14 +43,6 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
             )}
           >
             Mensual
-            {billingCycle === "monthly" && (
-              <motion.div
-                layoutId="billing-toggle"
-                className="absolute inset-0 rounded-full bg-background"
-                style={{ zIndex: -1 }}
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
-            )}
           </button>
           <button
             onClick={() => setBillingCycle("yearly")}
@@ -71,14 +54,6 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
             )}
           >
             Anual
-            {billingCycle === "yearly" && (
-              <motion.div
-                layoutId="billing-toggle"
-                className="absolute inset-0 rounded-full bg-background"
-                style={{ zIndex: -1 }}
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
-            )}
           </button>
         </div>
       </div>
@@ -86,25 +61,13 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
       {/* Pricing Tiers */}
       <div className="grid gap-6 lg:grid-cols-3">
         {tiers.map((tier) => (
-          <motion.div
+          <div
             key={tier.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
             className={cn(
-              "relative rounded-2xl bg-card p-6 shadow-lg",
+              "relative rounded-2xl bg-card p-6 shadow-lg transition-all hover:scale-105",
               tier.highlighted && "border-2 border-primary"
             )}
           >
-            {/* Glow Effect */}
-            <div
-              className={cn(
-                "absolute inset-0 rounded-2xl opacity-0 transition-opacity",
-                "bg-gradient-to-b from-primary/10 via-primary/5 to-transparent",
-                hoveredTier === tier.name && "opacity-100"
-              )}
-            />
-
             {/* Badge */}
             {tier.badge && (
               <div className="absolute -top-3 right-8">
@@ -123,32 +86,25 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
 
               {/* Price */}
               <div className="mt-8">
-                <motion.div
-                  key={billingCycle}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-baseline"
-                >
+                <div className="flex items-baseline">
                   <span className="text-4xl font-bold">
                     {billingCycle === "monthly"
                       ? tier.price.monthly
                       : tier.price.yearly}
                     €
                   </span>
-                  <span className="ml-2 text-sm text-muted-foreground">
+                  <span className="ml-1 text-sm text-muted-foreground">
                     /{billingCycle === "monthly" ? "mes" : "año"}
                   </span>
-                </motion.div>
+                </div>
                 {billingCycle === "yearly" && (
-                  <p className="mt-1 text-sm text-primary">
-                    Ahorra{" "}
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {Math.round(
                       ((tier.price.monthly * 12 - tier.price.yearly) /
                         (tier.price.monthly * 12)) *
                         100
                     )}
-                    %
+                    % de descuento
                   </p>
                 )}
               </div>
@@ -156,16 +112,7 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
               {/* Features */}
               <ul className="mt-8 space-y-4">
                 {tier.features.map((feature, index) => (
-                  <motion.li
-                    key={index}
-                    initial={false}
-                    animate={
-                      hoveredTier === tier.name
-                        ? { scale: 1.02, x: 4 }
-                        : { scale: 1, x: 0 }
-                    }
-                    className="flex items-center"
-                  >
+                  <li key={index} className="flex items-center">
                     <div
                       className={cn(
                         "mr-3 flex h-5 w-5 items-center justify-center rounded-full",
@@ -186,7 +133,7 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
                     >
                       {feature.text}
                     </span>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
 
@@ -200,7 +147,7 @@ export function PremiumPrice({ tiers, className }: PremiumPriceProps) {
                 {tier.buttonText || "Seleccionar plan"}
               </Button>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
