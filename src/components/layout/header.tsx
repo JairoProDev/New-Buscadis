@@ -2,40 +2,70 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Session } from "next-auth"
+import { Menu, Search, Plus } from "lucide-react"
+import { useSession } from "next-auth/react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { UserNav } from "@/components/layout/user-nav"
-import { MainNav } from "@/components/layout/main-nav"
 import { MobileNav } from "@/components/layout/mobile-nav"
-import { SearchCommand } from "@/components/search/search-command"
-import { routes } from "@/config/routes"
 
-interface HeaderProps {
-  session: Session | null
-}
+export function Header() {
+  const { data: session } = useSession()
 
-export function Header({ session }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <MobileNav />
-        <div className="flex items-center gap-6">
-          <Link href={routes.home} className="hidden items-center space-x-2 md:flex">
+        <MobileNav className="mr-2 md:hidden" />
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="flex items-center space-x-2">
             <span className="hidden font-bold sm:inline-block">BuscaDis</span>
           </Link>
-          <MainNav />
+          <nav className="hidden md:flex md:items-center md:space-x-4">
+            <Link
+              href="/anuncios"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Explorar
+            </Link>
+            <Link
+              href="/categorias"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Categorías
+            </Link>
+          </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <SearchCommand />
-          </div>
+          <form className="hidden w-full max-w-sm lg:flex">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar anuncios..."
+                className="w-full pl-9"
+              />
+            </div>
+          </form>
+          <Button asChild variant="ghost" size="icon" className="lg:hidden">
+            <Link href="/search">
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Buscar</span>
+            </Link>
+          </Button>
           {session ? (
-            <UserNav user={session.user} />
+            <>
+              <Button asChild variant="ghost" size="icon">
+                <Link href="/anuncios/nuevo">
+                  <Plus className="h-5 w-5" />
+                  <span className="sr-only">Publicar anuncio</span>
+                </Link>
+              </Button>
+              <UserNav user={session.user} />
+            </>
           ) : (
-            <Button asChild variant="ghost" size="sm">
-              <Link href={routes.auth.login}>Iniciar sesión</Link>
+            <Button asChild variant="default" size="sm">
+              <Link href="/auth/login">Iniciar sesión</Link>
             </Button>
           )}
         </div>

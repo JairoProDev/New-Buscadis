@@ -1,39 +1,26 @@
-import React from "react"
-import { Inter as FontSans } from "next/font/google"
+import * as React from "react"
 import { GeistSans } from "geist/font/sans"
 import { Analytics } from "@vercel/analytics/react"
 
 import "@/styles/globals.css"
 import { cn } from "@/lib/utils"
+import { ThemeProvider } from "@/providers/theme-provider"
 import { MainLayout } from "@/components/layout/main-layout"
-import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/providers/auth-provider"
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata = {
-  title: "BuscaDis - Adisos Clasificados",
+  title: "BuscaDis - Anuncios clasificados",
   description:
-    "La plataforma de adisos clasificados más accesible. Encuentra lo que buscas o publica tu adiso.",
+    "La plataforma de anuncios clasificados más accesible. Encuentra lo que buscas o publica tu anuncio.",
   keywords: [
-    "adisos",
+    "anuncios",
     "clasificados",
     "compra",
     "venta",
     "servicios",
     "productos",
     "accesible",
-    "empleos",
-    "trabajos",
-    "inmuebles",
-    "alquiler",
-    "buscadis",
-    "buscadis.com",
-    "vehiculos",
-
   ],
 }
 
@@ -43,21 +30,23 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="es" suppressHydrationWarning className={GeistSans.className}>
+    <html lang="es" suppressHydrationWarning>
       <head />
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        <AuthProvider>
-          <MainLayout>
-            {children}
-            <Toaster />
-          </MainLayout>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.className)}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <MainLayout>
+              {children}
+              <Toaster />
+            </MainLayout>
+          </AuthProvider>
           <Analytics />
-        </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
