@@ -5,65 +5,29 @@ import { ArrowRight, Search, Tag, Package } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col">
-      {/* Hero Section */}
-      <section className="flex flex-1 items-center justify-center bg-gradient-to-b from-white to-gray-50 py-20">
-        <div className="container px-4">
-          <div className="mx-auto max-w-[64rem] text-center">
-            <h1 className="bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl xl:text-6xl/none">
-              BuscaDis
-            </h1>
-            <p className="mt-4 text-xl text-muted-foreground sm:text-2xl">
-              La plataforma de anuncios clasificados más accesible.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg">
-                <Link href="/anuncios/nuevo">
-                  Publicar anuncio
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/anuncios">
-                  Explorar anuncios
-                  <Search className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
+        <h1 className="text-4xl font-bold text-center mb-8">BuscaDis</h1>
+        <p className="text-xl text-center mb-4">
+          La plataforma de anuncios clasificados más accesible
+        </p>
+        <div className="flex justify-center gap-4">
+          <a
+            href="/adisos/nuevo"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Publicar anuncio
+          </a>
+          <a
+            href="/adisos"
+            className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors"
+          >
+            Explorar anuncios
+          </a>
         </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="border-t bg-white py-20">
-        <div className="container px-4">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="flex flex-col items-center p-6 text-center">
-              <Search className="h-12 w-12 text-primary" />
-              <h3 className="mt-4 text-xl font-semibold">Búsqueda Inteligente</h3>
-              <p className="mt-2 text-muted-foreground">
-                Encuentra exactamente lo que buscas con nuestro sistema de búsqueda avanzado.
-              </p>
-            </Card>
-            <Card className="flex flex-col items-center p-6 text-center">
-              <Tag className="h-12 w-12 text-primary" />
-              <h3 className="mt-4 text-xl font-semibold">Precios Competitivos</h3>
-              <p className="mt-2 text-muted-foreground">
-                Compara precios y encuentra las mejores ofertas del mercado.
-              </p>
-            </Card>
-            <Card className="flex flex-col items-center p-6 text-center sm:col-span-2 lg:col-span-1">
-              <Package className="h-12 w-12 text-primary" />
-              <h3 className="mt-4 text-xl font-semibold">Envíos Seguros</h3>
-              <p className="mt-2 text-muted-foreground">
-                Gestiona tus envíos de forma segura y confiable.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </main>
   )
 }
